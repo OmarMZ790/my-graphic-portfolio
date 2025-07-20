@@ -80,9 +80,13 @@ const translations = {
 
 // Helper function to get Lucide icon component by name
 const getLucideIcon = (iconName) => {
-  // Ensure iconName is capitalized for LucideIcons import
-  const capitalizedIconName = iconName.charAt(0).toUpperCase() + iconName.slice(1);
-  const IconComponent = LucideIcons[capitalizedIconName];
+  // Convert kebab-case (e.g., "pen-tool") to PascalCase (e.g., "PenTool")
+  const pascalCaseName = iconName
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join('');
+  
+  const IconComponent = LucideIcons[pascalCaseName];
   return IconComponent ? <IconComponent size={24} /> : null;
 };
 
@@ -524,7 +528,7 @@ const Contact = ({ language, t, globalSettings }) => {
             <div className="space-y-4 mb-8">
               <div className="flex items-center justify-center space-x-3 rtl:space-x-reverse">
                 <Mail size={20} className="text-blue-400" />
-                <a href={`mailto:${globalSettings.contact_email || 'your.email@example.0com'}`} className="text-blue-400 hover:underline" dir="ltr">
+                <a href={`mailto:${globalSettings.contact_email || 'your.email@example.com'}`} className="text-blue-400 hover:underline" dir="ltr">
                   {globalSettings.contact_email || 'your.email@example.com'}
                 </a>
               </div>
