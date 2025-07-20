@@ -139,28 +139,33 @@ collections:
               <p class="mb-4">Upon full payment, intellectual property rights for the final product are transferred to the client. I reserve the right to display the project in my portfolio for promotional purposes.</p>
               <p>For any further inquiries, please contact me directly.</p>
 
-  - name: "specializations" # مجموعة جديدة للتخصصات (folder collection)
-    label: "التخصصات (المهارات)"
-    folder: "public/data/specializations" # مكان حفظ ملفات التخصصات (كل تخصص في ملف منفصل)
-    create: true # السماح بإنشاء تخصصات جديدة
-    slug: "{{slug}}" # استخدام اسم التخصص كجزء من اسم الملف (للسهولة)
-    fields:
-      - label: "اسم التخصص (عربي)"
-        name: "name_ar"
-        widget: "string"
-      - label: "اسم التخصص (إنجليزي)"
-        name: "name_en"
-        widget: "string"
-      - label: "أيقونة التخصص (Lucide Icon Name)" # اسم الأيقونة من مكتبة Lucide (مثلاً: palette, lightbulb, printer, megaphone)
-        name: "icon"
-        widget: "string"
-        hint: "أدخل اسم الأيقونة من مكتبة Lucide React (مثال: Palette, Lightbulb, Printer, Megaphone). تأكد من كتابة الحرف الأول كبيتال."
-      - label: "معرف التصنيف (Category Slug)" # هذا سيستخدم للفلترة في معرض الأعمال
-        name: "category_slug"
-        widget: "string"
-        hint: "معرف فريد للتخصص (مثال: logoDesign, branding). يجب أن يكون حروفاً صغيرة وبدون مسافات."
-        pattern: ['^[a-z0-9]+$', 'يجب أن يكون حروفاً صغيرة وأرقاماً فقط (بدون مسافات أو رموز خاصة).']
-    collapsed: true
+  - name: "specializations_list" # اسم المجموعة
+    label: "قائمة التخصصات (المهارات)"
+    files: # <--- تم التغيير هنا إلى 'files' (جمع)
+      - label: "التخصصات الرئيسية" # تسمية للملف الواحد الذي سيحتوي على القائمة
+        name: "specializations_data" # اسم الملف (بدون امتداد)
+        file: "public/data/specializations.json" # المسار الكامل للملف
+        fields:
+          - label: "التخصصات" # هذا هو الحقل الذي سيحتوي على قائمة التخصصات
+            name: "specializations"
+            widget: "list"
+            fields:
+              - label: "اسم التخصص (عربي)"
+                name: "name_ar"
+                widget: "string"
+              - label: "اسم التخصص (إنجليزي)"
+                name: "name_en"
+                widget: "string"
+              - label: "أيقونة التخصص (Lucide Icon Name)"
+                name: "icon"
+                widget: "string"
+                hint: "أدخل اسم الأيقونة من مكتبة Lucide React (مثال: Palette, Lightbulb, Printer, Megaphone). تأكد من كتابة الحرف الأول كبيتال."
+              - label: "معرف التصنيف (Category Slug)"
+                name: "category_slug"
+                widget: "string"
+                hint: "معرف فريد للتخصص (مثال: logoDesign, branding). يجب أن يكون حروفاً صغيرة وأرقاماً فقط (بدون مسافات أو رموز خاصة)."
+                pattern: ['^[a-z0-9]+$', 'يجب أن يكون حروفاً صغيرة وأرقاماً فقط (بدون مسافات أو رموز خاصة).']
+            collapsed: true
 
   - name: "portfolio_projects"
     label: "مشاريع معرض الأعمال"
@@ -203,13 +208,14 @@ collections:
                 required: false
               - label: "التصنيف"
                 name: "category"
-                widget: "relation" # <--- تم التغيير هنا إلى relation
-                collection: "specializations" # اسم المجموعة التي ستسحب منها التخصصات (الاسم الذي عرفناه أعلاه)
-                value_field: "category_slug" # الحقل الذي سيستخدم كقيمة للتصنيف (مثل logoDesign)
-                label_field: "{{name_ar}} / {{name_en}}" # الحقل الذي سيظهر في القائمة المنسدلة (اسم التخصص بالعربي والإنجليزي)
-                search_fields: ["name_ar", "name_en", "category_slug"] # حقول للبحث داخل القائمة
-                display_fields: ["name_ar", "name_en"] # الحقول التي ستعرض بعد الاختيار
-                options_length_threshold: 10 # عدد الخيارات قبل أن تتحول إلى بحث
+                widget: "relation"
+                collection: "specializations_list" # اسم المجموعة
+                file: "specializations_data" # اسم الملف داخل المجموعة (الاسم الجديد)
+                value_field: "specializations.*.category_slug" # المسار إلى قيمة category_slug داخل قائمة التخصصات
+                label_field: "specializations.*.name_ar / specializations.*.name_en" # المسار إلى اسم التخصص للعرض
+                search_fields: ["specializations.*.name_ar", "specializations.*.name_en", "specializations.*.category_slug"] # حقول للبحث داخل القائمة
+                display_fields: ["specializations.*.name_ar", "specializations.*.name_en"] # الحقول التي ستعرض بعد الاختيار
+                options_length_threshold: 10
               - label: "محتوى صفحة المشروع (تفاصيل كاملة - عربي)" # محتوى تفصيلي بالعربية
                 name: "body_ar"
                 widget: "markdown"

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as LucideIcons from 'lucide-react'; // Import all Lucide icons needed for dynamic use
-import { Globe, Mail, Phone, Palette, Lightbulb, Printer, Eye, Megaphone, Menu, X as CloseIcon, ChevronLeft, ChevronRight, MessageSquare } from 'lucide-react';
+import { Globe, Mail, Phone, Eye, MessageSquare, Menu, X as CloseIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Translations object (will be merged with CMS data)
 const translations = {
@@ -15,18 +15,10 @@ const translations = {
     tagline: 'أحول الأفكار إلى تصاميم بصرية مذهلة.', // Default, will be overridden by CMS
     heroDescription: 'بصفتي مصمم جرافيك شغوف ومبدع، أمتلك خبرة واسعة في تحويل الأفكار المعقدة إلى حلول بصرية جذابة ومؤثرة. أؤمن بأن التصميم الجيد هو مفتاح التواصل الفعال وبناء الهوية البصرية القوية للعلامات التجارية.', // Default, will be overridden by CMS
     heroSkillsTitle: 'ماذا أقدم؟',
-    skillLogoDesign: 'تصميم الشعارات الاحترافية',
-    skillBranding: 'بناء الهوية البصرية المتكاملة',
-    skillPrintDesign: 'تصميم المطبوعات',
-    skillAdvertisingDesign: 'التصاميم الإعلانية',
     callToAction: 'تصفح معرض أعمالي',
     portfolioIntro: 'استكشف أعمالي',
     portfolioDescription: 'هنا يمكنك استعراض مجموعة من أعمالي في مختلف تخصصات التصميم الجرافيكي.',
     all: 'الكل',
-    logoDesign: 'تصميم الشعارات',
-    branding: 'الهوية البصرية',
-    printDesign: 'تصميم المطبوعات',
-    advertisingDesign: 'التصاميم الإعلانية',
     contactTitle: 'تواصل معي',
     contactDescription: 'يسعدني تلقي استفساراتكم ومشاريعكم الجديدة. لا تترددوا في التواصل معي عبر الطرق التالية:',
     email: 'البريد الإلكتروني',
@@ -59,18 +51,10 @@ const translations = {
     tagline: 'Transforming ideas into stunning visual designs.', // Default, will be overridden by CMS
     heroDescription: 'As a passionate and creative graphic designer, I have extensive experience in transforming complex ideas into attractive and impactful visual solutions. I believe that good design is key to effective communication and building a strong visual identity for brands.', // Default, will be overridden by CMS
     heroSkillsTitle: 'What I Offer?',
-    skillLogoDesign: 'Professional Logo Design',
-    skillBranding: 'Comprehensive Brand Identity Building',
-    skillPrintDesign: 'Print Design',
-    skillAdvertisingDesign: 'Advertising Design',
     callToAction: 'Browse My Portfolio',
     portfolioIntro: 'Explore My Work',
     portfolioDescription: 'Here you can browse a collection of my work across various graphic design specializations.',
     all: 'All',
-    logoDesign: 'Logo Design',
-    branding: 'Branding',
-    printDesign: 'Print Design',
-    advertisingDesign: 'Advertising Design',
     contactTitle: 'Get in Touch',
     contactDescription: 'I\'d love to hear about your inquiries and new projects. Feel free to reach out to me through the following:',
     email: 'Email',
@@ -263,14 +247,7 @@ const Sidebar = ({ isOpen, setIsOpen, setCurrentPage, language, setLanguage, t, 
 };
 
 // Hero Section Component
-const Hero = ({ language, setCurrentPage, setCurrentFilter, t, globalSettings }) => {
-  const skills = [
-    { icon: <Palette size={24} />, text: t.skillLogoDesign, category: 'logoDesign' },
-    { icon: <Lightbulb size={24} />, text: t.skillBranding, category: 'branding' },
-    { icon: <Printer size={24} />, text: t.skillPrintDesign, category: 'printDesign' },
-    { icon: <Megaphone size={24} />, text: t.skillAdvertisingDesign, category: 'advertisingDesign' },
-  ];
-
+const Hero = ({ language, setCurrentPage, setCurrentFilter, t, globalSettings, specializations }) => {
   const handleSkillClick = (category) => {
     setCurrentPage('portfolio');
     setCurrentFilter(category);
@@ -304,14 +281,16 @@ const Hero = ({ language, setCurrentPage, setCurrentFilter, t, globalSettings })
             {t.heroSkillsTitle}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto mb-12">
-            {skills.map((skill, index) => (
+            {specializations.map((skill, index) => (
               <button
-                key={index}
-                onClick={() => handleSkillClick(skill.category)}
+                key={skill.category_slug || index}
+                onClick={() => handleSkillClick(skill.category_slug)}
                 className="flex flex-col items-center p-6 rounded-lg shadow-lg bg-gray-700 transform hover:scale-105 transition-transform duration-300 border border-transparent hover:border-blue-400 cursor-pointer"
               >
-                <div className="text-blue-400 mb-4">{skill.icon}</div>
-                <p className="text-lg font-semibold text-gray-100 text-center">{skill.text}</p>
+                <div className="text-blue-400 mb-4">{getLucideIcon(skill.icon)}</div>
+                <p className="text-lg font-semibold text-gray-100 text-center">
+                  {language === 'ar' ? skill.name_ar : skill.name_en}
+                </p>
               </button>
             ))}
           </div>
@@ -329,7 +308,7 @@ const Hero = ({ language, setCurrentPage, setCurrentFilter, t, globalSettings })
 };
 
 // Portfolio Section Component
-const Portfolio = ({ language, currentFilter, setCurrentFilter, t, portfolioProjects, setCurrentPage, setSelectedProjectSlug }) => {
+const Portfolio = ({ language, currentFilter, setCurrentFilter, t, portfolioProjects, setCurrentPage, setSelectedProjectSlug, specializations }) => {
   const [currentPageNum, setCurrentPageNum] = useState(1); // State for pagination current page
   const itemsPerPage = 10; // Number of projects per page
 
@@ -373,34 +352,16 @@ const Portfolio = ({ language, currentFilter, setCurrentFilter, t, portfolioProj
           >
             {t.all}
           </button>
-          <button
-            onClick={() => { setCurrentFilter('logoDesign'); setCurrentPageNum(1); }}
-            className={`px-6 py-2 rounded-full font-semibold transition-all duration-300 shadow-md
-              ${currentFilter === 'logoDesign' ? 'bg-blue-600 text-white transform scale-105' : 'bg-gray-700 text-gray-300 hover:text-blue-400'}`}
-          >
-            {t.logoDesign}
-          </button>
-          <button
-            onClick={() => { setCurrentFilter('branding'); setCurrentPageNum(1); }}
-            className={`px-6 py-2 rounded-full font-semibold transition-all duration-300 shadow-md
-              ${currentFilter === 'branding' ? 'bg-blue-600 text-white transform scale-105' : 'bg-gray-700 text-gray-300 hover:text-blue-400'}`}
-          >
-            {t.branding}
-          </button>
-          <button
-            onClick={() => { setCurrentFilter('printDesign'); setCurrentPageNum(1); }}
-            className={`px-6 py-2 rounded-full font-semibold transition-all duration-300 shadow-md
-              ${currentFilter === 'printDesign' ? 'bg-blue-600 text-white transform scale-105' : 'bg-gray-700 text-gray-300 hover:text-blue-400'}`}
-          >
-            {t.printDesign}
-          </button>
-          <button
-            onClick={() => { setCurrentFilter('advertisingDesign'); setCurrentPageNum(1); }}
-            className={`px-6 py-2 rounded-full font-semibold transition-all duration-300 shadow-md
-              ${currentFilter === 'advertisingDesign' ? 'bg-blue-600 text-white transform scale-105' : 'bg-gray-700 text-gray-300 hover:text-blue-400'}`}
-          >
-            {t.advertisingDesign}
-          </button>
+          {specializations.map((spec) => (
+            <button
+              key={spec.category_slug}
+              onClick={() => { setCurrentFilter(spec.category_slug); setCurrentPageNum(1); }}
+              className={`px-6 py-2 rounded-full font-semibold transition-all duration-300 shadow-md
+                ${currentFilter === spec.category_slug ? 'bg-blue-600 text-white transform scale-105' : 'bg-gray-700 text-gray-300 hover:text-blue-400'}`}
+            >
+              {language === 'ar' ? spec.name_ar : spec.name_en}
+            </button>
+          ))}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -503,6 +464,19 @@ const ProjectDetail = ({ project, language, t }) => {
           className="w-full max-w-4xl h-auto max-h-96 object-contain rounded-lg shadow-lg mb-8 mx-auto block"
           onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/800x500/CCCCCC/333333?text=Project+Image"; }}
         />
+        {additionalImages.length > 0 && (
+          <div className="my-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {additionalImages.map((img, index) => (
+              <img
+                key={index}
+                src={img.image || `https://placehold.co/600x400/CCCCCC/333333?text=Image+${index + 1}`}
+                alt={`${title} - Image ${index + 1}`}
+                className="w-full h-64 object-cover rounded-lg shadow-md"
+                onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/600x400/CCCCCC/333333?text=Image+${index + 1}`; }}
+              />
+            ))}
+          </div>
+        )}
         <p className="text-lg text-gray-300 text-center mb-8 max-w-3xl mx-auto">
           {description}
         </p>
@@ -517,26 +491,6 @@ const ProjectDetail = ({ project, language, t }) => {
             >
               {t.visitProject}
             </a>
-          </div>
-        )}
-
-        {/* Additional Images Section */}
-        {additionalImages.length > 0 && (
-          <div className="my-12">
-            <h3 className="text-2xl font-bold text-center mb-6 text-white">
-              {t.additionalImages}
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {additionalImages.map((img, index) => (
-                <img
-                  key={index}
-                  src={img.image || `https://placehold.co/600x400/CCCCCC/333333?text=Image+${index + 1}`}
-                  alt={`${title} - Image ${index + 1}`}
-                  className="w-full h-64 object-cover rounded-lg shadow-md"
-                  onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/600x400/CCCCCC/333333?text=Image+${index + 1}`; }}
-                />
-              ))}
-            </div>
           </div>
         )}
 
@@ -570,7 +524,7 @@ const Contact = ({ language, t, globalSettings }) => {
             <div className="space-y-4 mb-8">
               <div className="flex items-center justify-center space-x-3 rtl:space-x-reverse">
                 <Mail size={20} className="text-blue-400" />
-                <a href={`mailto:${globalSettings.contact_email || 'your.email@example.com'}`} className="text-blue-400 hover:underline" dir="ltr">
+                <a href={`mailto:${globalSettings.contact_email || 'your.email@example.0com'}`} className="text-blue-400 hover:underline" dir="ltr">
                   {globalSettings.contact_email || 'your.email@example.com'}
                 </a>
               </div>
@@ -668,6 +622,7 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [globalSettings, setGlobalSettings] = useState({});
   const [portfolioProjects, setPortfolioProjects] = useState([]);
+  const [specializations, setSpecializations] = useState([]); // New state for specializations
   const [legalInfo, setLegalInfo] = useState({});
   const [selectedProjectSlug, setSelectedProjectSlug] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -749,6 +704,17 @@ function App() {
           setLegalInfo(legalData);
         }
 
+        // Fetch specializations
+        const specializationsResponse = await fetch('/data/specializations.json');
+        if (!specializationsResponse.ok) {
+          console.warn("specializations.json not found, using empty specializations. Please publish from CMS.");
+          setSpecializations([]); // Set to empty array
+        } else {
+          const specializationsData = await specializationsResponse.json();
+          // Assuming specializations.json contains an object with a 'specializations' array
+          setSpecializations(specializationsData.specializations || []);
+        }
+
         // Fetch portfolio projects
         const portfolioResponse = await fetch('/data/portfolio.json');
         if (!portfolioResponse.ok) {
@@ -805,9 +771,9 @@ function App() {
 
     switch (currentPage) {
       case 'home':
-        return <Hero language={language} setCurrentPage={setCurrentPage} setCurrentFilter={setCurrentFilter} t={t} globalSettings={globalSettings} />;
+        return <Hero language={language} setCurrentPage={setCurrentPage} setCurrentFilter={setCurrentFilter} t={t} globalSettings={globalSettings} specializations={specializations} />;
       case 'portfolio':
-        return <Portfolio language={language} currentFilter={currentFilter} setCurrentFilter={setCurrentFilter} t={t} portfolioProjects={portfolioProjects} setCurrentPage={setCurrentPage} setSelectedProjectSlug={setSelectedProjectSlug} />;
+        return <Portfolio language={language} currentFilter={currentFilter} setCurrentFilter={setCurrentFilter} t={t} portfolioProjects={portfolioProjects} setCurrentPage={setCurrentPage} setSelectedProjectSlug={setSelectedProjectSlug} specializations={specializations} />;
       case 'projectDetail':
         const project = portfolioProjects.find(p => p.slug === selectedProjectSlug);
         return <ProjectDetail project={project} language={language} t={t} />;
@@ -816,7 +782,7 @@ function App() {
       case 'legal':
         return <Legal language={language} t={t} legalInfo={legalInfo} />;
       default:
-        return <Hero language={language} setCurrentPage={setCurrentPage} setCurrentFilter={setCurrentFilter} t={t} globalSettings={globalSettings} />;
+        return <Hero language={language} setCurrentPage={setCurrentPage} setCurrentFilter={setCurrentFilter} t={t} globalSettings={globalSettings} specializations={specializations} />;
     }
   };
 
