@@ -5,6 +5,12 @@
       "name_en": "اسم التخصص (إنجليزي) ",
       "icon": "Palette",
       "category_slug": "alette"
+    },
+    {
+      "name_ar": "اسم التخصص (إنجليزي) ",
+      "name_en": "اسم التخصص (عربي) ",
+      "icon": "Lightbulb",
+      "category_slug": "ightbulb"
     }
   ]
 }
