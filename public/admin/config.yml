@@ -1,0 +1,218 @@
+backend:
+  name: git-gateway
+  branch: main # الفرع الذي سيقوم CMS بتحديثه على GitHub
+  base_url: https://omar-mz.netlify.app # هذا هو السطر الذي يجب أن يكون هكذا الآن
+  auth_type: pkce # استخدم PKCE للمصادقة (يحل مشاكل إعادة التوجيه)
+
+publish_mode: editorial_workflow # تفعيل سير عمل المسودات والمراجعات
+media_folder: "public/images" # المجلد الذي سيتم رفع الصور إليه
+public_folder: "/images" # المسار العام للصور (كيف يتم الوصول إليها من الموقع)
+
+collections:
+  - name: "global_settings" # اسم داخلي للمجموعة
+    label: "الإعدادات العامة" # الاسم الذي سيظهر في لوحة تحكم CMS
+    files:
+      - label: "معلومات الموقع الشخصية" # اسم الملف الذي سيتم تعديله
+        name: "personal_info"
+        file: "public/data/global.json" # مسار حفظ هذا الملف (سيتم إنشاؤه تلقائياً)
+        fields:
+          - label: "اسم المصمم (عربي)" # حقل جديد لاسم المصمم بالعربية
+            name: "designer_name_ar"
+            widget: "string"
+            default: "عمر محمد"
+          - label: "اسم المصمم (إنجليزي)" # حقل جديد لاسم المصمم بالإنجليزية
+            name: "designer_name_en"
+            widget: "string"
+            default: "Omar Mohamed"
+          - label: "صورة الملف الشخصي"
+            name: "profile_image"
+            widget: "image"
+            default: "https://placehold.co/150x150/6B46C1/FFFFFF?text=Profile" # صورة افتراضية
+          - label: "أيقونة الموقع (Favicon)" # حقل جديد لأيقونة الموقع
+            name: "favicon"
+            widget: "image"
+            required: false # يمكن أن يكون اختيارياً
+            default: "/favicon.ico" # مسار افتراضي
+          - label: "عنوان الصفحة الرئيسية (عربي)" # حقل جديد لعنوان الصفحة بالعربية
+            name: "page_title_ar"
+            widget: "string"
+            default: "عمر محمد - مصمم جرافيك"
+          - label: "عنوان الصفحة الرئيسية (إنجليزي)" # حقل جديد لعنوان الصفحة بالإنجليزية
+            name: "page_title_en"
+            widget: "string"
+            default: "Omar Mohamed - Graphic Designer"
+          - label: "وصف الموقع (عربي)" # حقل جديد لوصف الموقع بالعربية
+            name: "meta_description_ar"
+            widget: "text"
+            default: "مصمم جرافيك محترف بخبرة في تصميم الشعارات والهوية البصرية والمطبوعات والتصاميم الإعلانية. أحول الأفكار إلى تصاميم بصرية مبتكرة."
+          - label: "وصف الموقع (إنجليزي)" # حقل جديد لوصف الموقع بالإنجليزية
+            name: "meta_description_en"
+            widget: "text"
+            default: "Professional graphic designer specializing in logo design, branding, print design, and advertising. Transforming ideas into innovative visual designs."
+          - label: "العنوان الوصفي (عربي)"
+            name: "tagline_ar"
+            widget: "string"
+            default: "أحول الأفكار إلى تصاميم بصرية مذهلة."
+          - label: "العنوان الوصفي (إنجليزي)"
+            name: "tagline_en"
+            widget: "string"
+            default: "Transforming ideas into stunning visual designs."
+          - label: "الوصف التعريفي (عربي)"
+            name: "hero_description_ar"
+            widget: "markdown" # يسمح بالنص المنسق (Bold, Italic, Lists)
+            default: "بصفتي مصمم جرافيك شغوف ومبدع، أمتلك خبرة واسعة في تحويل الأفكار المعقدة إلى حلول بصرية جذابة ومؤثرة. أؤمن بأن التصميم الجيد هو مفتاح التواصل الفعال وبناء الهوية البصرية القوية للعلامات التجارية."
+          - label: "الوصف التعريفي (إنجليزي)"
+            name: "hero_description_en"
+            widget: "markdown"
+            default: "As a passionate and creative graphic designer, I have extensive experience in transforming complex ideas into attractive and impactful visual solutions. I believe that good design is key to effective communication and building a strong visual identity for brands."
+          - label: "البريد الإلكتروني"
+            name: "contact_email"
+            widget: "string"
+            default: "your.email@example.com"
+          - label: "رقم الهاتف"
+            name: "contact_phone"
+            widget: "string"
+            default: "+123 456 7890"
+          - label: "روابط التواصل الاجتماعي"
+            name: "social_links"
+            widget: "list" # يسمح بإضافة وحذف روابط متعددة
+            fields:
+              - label: "اسم المنصة"
+                name: "platform_name"
+                widget: "string"
+                default: "LinkedIn"
+              - label: "رابط الصفحة"
+                name: "url"
+                widget: "string"
+                default: "https://linkedin.com/yourprofile"
+              - label: "أيقونة (Lucide Icon Name)" # هنا ستضع اسم الأيقونة من مكتبة Lucide-React (مثلاً: linkedin, instagram, facebook, x)
+                name: "icon"
+                widget: "string"
+                default: "linkedin"
+            collapsed: true # لجعل العناصر مطوية في لوحة التحكم
+      - label: "المعلومات القانونية" # حقل جديد لصفحة المعلومات القانونية
+        name: "legal_info"
+        file: "public/data/legal.json" # مسار حفظ هذا الملف
+        fields:
+          - label: "عنوان الصفحة (عربي)"
+            name: "title_ar"
+            widget: "string"
+            default: "المعلومات القانونية والشروط"
+          - label: "عنوان الصفحة (إنجليزي)"
+            name: "title_en"
+            widget: "string"
+            default: "Legal Information & Terms"
+          - label: "محتوى الصفحة (عربي)"
+            name: "content_ar"
+            widget: "markdown"
+            default: |
+              <p class="mb-4">هذه الصفحة تحتوي على الشروط والأحكام الخاصة بالتعامل مع خدمات التصميم الجرافيكي التي أقدمها.</p>
+              <h3 class="text-xl font-semibold mb-2">سياسة الخصوصية:</h3>
+              <p class="mb-4">ألتزم بحماية خصوصية بيانات عملائي. أي معلومات شخصية يتم جمعها ستستخدم فقط لأغراض المشروع ولن يتم مشاركتها مع أطراف ثالثة.</p>
+              <h3 class="text-xl font-semibold mb-2">شروط الخدمة:</h3>
+              <ul class="list-disc list-inside mb-4">
+                <li>جميع المشاريع تتطلب توقيع عقد عمل متفق عليه.</li>
+                <li>يتم تحديد شروط الدفع وجدول التسليم في العقد.</li>
+                <li>أحتفظ بحق رفض أي مشروع يتعارض مع مبادئي الأخلاقية أو قدراتي الفنية.</li>
+                <li>لا أقدم خدمات تصميم تتعلق بالمحتوى غير القانوني أو المسيء.</li>
+                <li>يتم تقديم عدد معين من المراجعات لكل مشروع كما هو متفق عليه في العقد.</li>
+              </ul>
+              <h3 class="text-xl font-semibold mb-2">حقوق الملكية الفكرية:</h3>
+              <p class="mb-4">بعد الدفع الكامل، يتم نقل حقوق الملكية الفكرية للمنتج النهائي إلى العميل. أحتفظ بحق عرض المشروع في معرض أعمالي لأغراض دعائية.</p>
+              <p>لأي استفسارات إضافية، يرجى التواصل معي مباشرة.</p>
+          - label: "محتوى الصفحة (إنجليزي)"
+            name: "content_en"
+            widget: "markdown"
+            default: |
+              <p class="mb-4">This page contains the terms and conditions for engaging with my graphic design services.</p>
+              <h3 class="text-xl font-semibold mb-2">Privacy Policy:</h3>
+              <p class="mb-4">I am committed to protecting the privacy of my clients' data. Any personal information collected will only be used for project purposes and will not be shared with third parties.</p>
+              <h3 class="text-xl font-semibold mb-2">Terms of Service:</h3>
+              <ul class="list-disc list-inside mb-4">
+                <li>All projects require a signed agreement.</li>
+                <li>Payment terms and delivery schedule will be outlined in the agreement.</li>
+                <li>I reserve the right to decline any project that conflicts with my ethical principles or artistic capabilities.</li>
+                <li>I do not provide design services related to illegal or offensive content.</li>
+                <li>A specific number of revisions will be provided for each project as agreed upon in the contract.</li>
+              </ul>
+              <h3 class="text-xl font-semibold mb-2">Intellectual Property Rights:</h3>
+              <p class="mb-4">Upon full payment, intellectual property rights for the final product are transferred to the client. I reserve the right to display the project in my portfolio for promotional purposes.</p>
+              <p>For any further inquiries, please contact me directly.</p>
+
+  - name: "specializations" # مجموعة جديدة للتخصصات
+    label: "التخصصات (المهارات)"
+    folder: "public/data/specializations" # مكان حفظ ملفات التخصصات
+    create: true # السماح بإنشاء تخصصات جديدة
+    slug: "{{slug}}" # استخدام اسم التخصص كجزء من اسم الملف (للسهولة)
+    fields:
+      - label: "اسم التخصص (عربي)"
+        name: "name_ar"
+        widget: "string"
+      - label: "اسم التخصص (إنجليزي)"
+        name: "name_en"
+        widget: "string"
+      - label: "أيقونة التخصص (Lucide Icon Name)" # اسم الأيقونة من مكتبة Lucide (مثلاً: palette, lightbulb, printer, megaphone)
+        name: "icon"
+        widget: "string"
+        hint: "أدخل اسم الأيقونة من مكتبة Lucide React (مثال: Palette, Lightbulb, Printer, Megaphone). تأكد من كتابة الحرف الأول كبيتال."
+      - label: "معرف التصنيف (Category Slug)" # هذا سيستخدم للفلترة في معرض الأعمال
+        name: "category_slug"
+        widget: "string"
+        hint: "معرف فريد للتخصص (مثال: logoDesign, branding). يجب أن يكون حروفاً صغيرة وبدون مسافات."
+        pattern: ['^[a-z0-9]+$', 'يجب أن يكون حروفاً صغيرة وأرقاماً فقط (بدون مسافات أو رموز خاصة).']
+    collapsed: true
+
+  - name: "portfolio_projects"
+    label: "مشاريع معرض الأعمال"
+    files:
+      - label: "قائمة المشاريع"
+        name: "projects_list"
+        file: "public/data/portfolio.json" # مسار حفظ ملف JSON الذي سيحتوي على كل المشاريع
+        fields:
+          - label: "المشاريع"
+            name: "projects"
+            widget: "list" # يسمح بإضافة وحذف مشاريع متعددة
+            fields:
+              - label: "عنوان المشروع (عربي)"
+                name: "title_ar"
+                widget: "string"
+              - label: "عنوان المشروع (إنجليزي)"
+                name: "title_en"
+                widget: "string"
+              - label: "وصف قصير (عربي)"
+                name: "short_description_ar"
+                widget: "text"
+              - label: "وصف قصير (إنجليزي)"
+                name: "short_description_en"
+                widget: "text"
+              - label: "صورة المشروع الرئيسية"
+                name: "main_image"
+                widget: "image"
+              - label: "صور إضافية للمشروع" # حقل جديد لصور متعددة
+                name: "additional_images"
+                widget: "list"
+                fields:
+                  - label: "صورة"
+                    name: "image"
+                    widget: "image"
+                required: false
+                collapsed: true
+              - label: "رابط المشروع (اختياري)"
+                name: "project_url"
+                widget: "string"
+                required: false
+              - label: "التصنيف"
+                name: "category"
+                widget: "select"
+                # Options will be dynamically populated from specializations in App.js,
+                # but we keep some defaults here for CMS UI consistency.
+                options: ["logoDesign", "branding", "printDesign", "advertisingDesign"]
+              - label: "محتوى صفحة المشروع (تفاصيل كاملة - عربي)" # محتوى تفصيلي بالعربية
+                name: "body_ar"
+                widget: "markdown"
+                required: false
+              - label: "محتوى صفحة المشروع (تفاصيل كاملة - إنجليزي)" # محتوى تفصيلي بالإنجليزية
+                name: "body_en"
+                widget: "markdown"
+                required: false
+            collapsed: true
