@@ -284,7 +284,8 @@ const Hero = ({ language, setCurrentPage, setCurrentFilter, t, globalSettings, s
           <h3 className="text-3xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-teal-600">
             {t.heroSkillsTitle}
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto mb-12">
+          {/* Centering for specializations: use flex and justify-center on parent */}
+          <div className="flex flex-wrap justify-center gap-8 max-w-5xl mx-auto mb-12">
             {specializations.map((skill, index) => (
               <button
                 key={skill.category_slug || index}
@@ -410,7 +411,8 @@ const Portfolio = ({ language, currentFilter, setCurrentFilter, t, portfolioProj
               disabled={currentPageNum === 1}
               className="p-3 rounded-full bg-gray-700 text-gray-300 hover:bg-blue-600 hover:text-white transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <ChevronLeft size={20} />
+              {/* Conditional arrow direction for "Previous" */}
+              {language === 'ar' ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
               <span className="sr-only">{t.prev}</span>
             </button>
             {[...Array(totalPages)].map((_, index) => (
@@ -428,7 +430,8 @@ const Portfolio = ({ language, currentFilter, setCurrentFilter, t, portfolioProj
               disabled={currentPageNum === totalPages}
               className="p-3 rounded-full bg-gray-700 text-gray-300 hover:bg-blue-600 hover:text-white transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <ChevronRight size={20} />
+              {/* Conditional arrow direction for "Next" */}
+              {language === 'ar' ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
               <span className="sr-only">{t.next}</span>
             </button>
           </div>
@@ -541,7 +544,8 @@ const Contact = ({ language, t, globalSettings }) => {
             </div>
 
             <h3 className="text-2xl font-semibold mb-6 text-white">{t.socialMedia}</h3>
-            <div className="flex justify-center space-x-4"> {/* Increased space-x for better spacing */}
+            {/* Added rtl:space-x-reverse for correct spacing in RTL */}
+            <div className="flex justify-center space-x-4 rtl:space-x-reverse">
               {socialLinks.map((link, index) => {
                 const IconComponent = getLucideIcon(link.icon);
                 return IconComponent ? (
@@ -550,7 +554,7 @@ const Contact = ({ language, t, globalSettings }) => {
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-3 rounded-full bg-gray-600 text-gray-300 hover:bg-blue-600 hover:text-white transition-all duration-300 shadow-md" // Added circular, background, hover effects
+                    className="p-3 rounded-full bg-gray-600 text-gray-300 hover:bg-blue-600 hover:text-white transition-all duration-300 shadow-md"
                     title={link.platform_name}
                   >
                     {IconComponent}
