@@ -1,7 +1,7 @@
 backend:
   name: git-gateway
   branch: main # الفرع الذي سيقوم CMS بتحديثه على GitHub
-  base_url: https://omar-mz.netlify.app # هذا هو السطر الذي يجب أن يكون هكذا الآن
+  base_url: https://omar-mz.netlify.app # استبدل 'your-site-name.netlify.app' برابط موقعك الفعلي
   auth_type: pkce # استخدم PKCE للمصادقة (يحل مشاكل إعادة التوجيه)
 
 publish_mode: editorial_workflow # تفعيل سير عمل المسودات والمراجعات
@@ -139,9 +139,9 @@ collections:
               <p class="mb-4">Upon full payment, intellectual property rights for the final product are transferred to the client. I reserve the right to display the project in my portfolio for promotional purposes.</p>
               <p>For any further inquiries, please contact me directly.</p>
 
-  - name: "specializations" # مجموعة جديدة للتخصصات
+  - name: "specializations" # مجموعة جديدة للتخصصات (folder collection)
     label: "التخصصات (المهارات)"
-    folder: "public/data/specializations" # مكان حفظ ملفات التخصصات
+    folder: "public/data/specializations" # مكان حفظ ملفات التخصصات (كل تخصص في ملف منفصل)
     create: true # السماح بإنشاء تخصصات جديدة
     slug: "{{slug}}" # استخدام اسم التخصص كجزء من اسم الملف (للسهولة)
     fields:
@@ -203,10 +203,13 @@ collections:
                 required: false
               - label: "التصنيف"
                 name: "category"
-                widget: "select"
-                # Options will be dynamically populated from specializations in App.js,
-                # but we keep some defaults here for CMS UI consistency.
-                options: ["logoDesign", "branding", "printDesign", "advertisingDesign"]
+                widget: "relation" # <--- تم التغيير هنا إلى relation
+                collection: "specializations" # اسم المجموعة التي ستسحب منها التخصصات (الاسم الذي عرفناه أعلاه)
+                value_field: "category_slug" # الحقل الذي سيستخدم كقيمة للتصنيف (مثل logoDesign)
+                label_field: "{{name_ar}} / {{name_en}}" # الحقل الذي سيظهر في القائمة المنسدلة (اسم التخصص بالعربي والإنجليزي)
+                search_fields: ["name_ar", "name_en", "category_slug"] # حقول للبحث داخل القائمة
+                display_fields: ["name_ar", "name_en"] # الحقول التي ستعرض بعد الاختيار
+                options_length_threshold: 10 # عدد الخيارات قبل أن تتحول إلى بحث
               - label: "محتوى صفحة المشروع (تفاصيل كاملة - عربي)" # محتوى تفصيلي بالعربية
                 name: "body_ar"
                 widget: "markdown"
