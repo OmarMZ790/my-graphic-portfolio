@@ -11,6 +11,12 @@
       "name_en": "اسم التخصص (عربي) ",
       "icon": "Lightbulb",
       "category_slug": "ightbulb"
+    },
+    {
+      "name_ar": "تصميم شعارات إحترافية",
+      "name_en": "Designing Professional Logos",
+      "icon": "Pen-tool",
+      "category_slug": "logos"
     }
   ]
 }
