@@ -1,0 +1,10 @@
+{
+  "specializations": [
+    {
+      "name_ar": "اسم التخصص (عربي) ",
+      "name_en": "اسم التخصص (إنجليزي) ",
+      "icon": "Palette",
+      "category_slug": "alette"
+    }
+  ]
+}
