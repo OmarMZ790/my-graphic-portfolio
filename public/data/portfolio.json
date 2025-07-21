@@ -14,6 +14,93 @@
       "short_description_ar": "وصف قصير (عربي) ",
       "title_ar": "عنوان المشروع (عربي) ",
       "category": "alette"
+    },
+    {
+      "body_en": "> محتوى صفحة المشروع (تفاصيل كاملة - إنجليزي) (optional)",
+      "body_ar": "محتوى صفحة المشروع (تفاصيل كاملة - عربي) (optional)",
+      "short_description_en": "وصف قصير (إنجليزي) ",
+      "additional_images": [
+        {
+          "image": "/images/6-4.jpg"
+        }
+      ],
+      "title_en": "عنوان المشروع (إنجليزي) ",
+      "main_image": "/images/drawing-122.svg",
+      "short_description_ar": "وصف قصير (عربي) ",
+      "title_ar": "عنوان المشروع (عربي) ",
+      "category": "logos"
+    },
+    {
+      "title_ar": "عنوان المشروع (عربي) ",
+      "title_en": "عنوان المشروع (إنجليزي) ",
+      "short_description_ar": "وصف قصير (عربي) ",
+      "short_description_en": "وصف قصير (إنجليزي) ",
+      "main_image": "/images/6-4.jpg",
+      "category": "logos"
+    },
+    {
+      "title_ar": "عنوان المشروع (عربي) ",
+      "title_en": "عنوان المشروع (إنجليزي) ",
+      "short_description_ar": "وصف قصير (عربي) ",
+      "short_description_en": "وصف قصير (إنجليزي) ",
+      "main_image": "/images/6-4.jpg",
+      "category": "logos"
+    },
+    {
+      "title_ar": "عنوان المشروع (عربي) ",
+      "title_en": "عنوان المشروع (إنجليزي) ",
+      "short_description_ar": "وصف قصير (عربي) ",
+      "short_description_en": "وصف قصير (إنجليزي) ",
+      "main_image": "/images/6-4.jpg",
+      "category": "logos"
+    },
+    {
+      "title_ar": "عنوان المشروع (عربي) ",
+      "title_en": "عنوان المشروع (إنجليزي) ",
+      "short_description_ar": "وصف قصير (عربي) ",
+      "short_description_en": "وصف قصير (إنجليزي) ",
+      "main_image": "/images/drawing-122.svg",
+      "category": "logos"
+    },
+    {
+      "title_ar": "عنوان المشروع (عربي) ",
+      "title_en": "عنوان المشروع (إنجليزي) ",
+      "short_description_ar": "وصف قصير (عربي) ",
+      "short_description_en": "وصف قصير (إنجليزي) ",
+      "main_image": "/images/drawing-122.svg",
+      "category": "logos"
+    },
+    {
+      "title_ar": "عنوان المشروع (عربي) ",
+      "title_en": "عنوان المشروع (إنجليزي) ",
+      "short_description_ar": "وصف قصير (عربي) ",
+      "short_description_en": "وصف قصير (إنجليزي) ",
+      "main_image": "/images/6-4.jpg",
+      "category": "alette"
+    },
+    {
+      "title_ar": "عنوان المشروع (عربي) ",
+      "title_en": "عنوان المشروع (إنجليزي) ",
+      "short_description_ar": "وصف قصير (عربي) ",
+      "short_description_en": "وصف قصير (إنجليزي) ",
+      "main_image": "/images/6-4.jpg",
+      "category": "ightbulb"
+    },
+    {
+      "title_ar": "عنوان المشروع (عربي) ",
+      "title_en": "عنوان المشروع (إنجليزي) ",
+      "short_description_ar": "وصف قصير (عربي) ",
+      "short_description_en": "وصف قصير (إنجليزي) ",
+      "main_image": "/images/6-4.jpg",
+      "category": "logos"
+    },
+    {
+      "title_ar": "عنوان المشروع (عربي) ",
+      "title_en": "عنوان المشروع (إنجليزي) ",
+      "short_description_ar": "وصف قصير (عربي) ",
+      "short_description_en": "وصف قصير (إنجليزي) ",
+      "main_image": "/images/6-4.jpg",
+      "category": "alette"
     }
   ]
 }
