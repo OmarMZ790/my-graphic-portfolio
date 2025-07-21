@@ -1,16 +1,18 @@
 {
   "projects": [
     {
-      "title_ar": "عنوان المشروع (عربي) ",
-      "title_en": "عنوان المشروع (إنجليزي) ",
-      "short_description_ar": "وصف قصير (عربي) ",
+      "body_en": "محتوى صفحة المشروع (تفاصيل كاملة - إنجليزي) (optional)",
+      "body_ar": "محتوى صفحة المشروع (تفاصيل كاملة - عربي) (optional)",
       "short_description_en": "وصف قصير (إنجليزي) ",
-      "main_image": "/images/6-4.jpg",
       "additional_images": [
         {
           "image": "/images/6-4.jpg"
         }
       ],
+      "title_en": "عنوان المشروع (إنجليزي) ",
+      "main_image": "/images/6-4.jpg",
+      "short_description_ar": "وصف قصير (عربي) ",
+      "title_ar": "عنوان المشروع (عربي) ",
       "category": "alette"
     }
   ]
