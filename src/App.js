@@ -621,7 +621,7 @@ const SectionRenderer = ({ section, language, t }) => {
               src={section.image || "https://placehold.co/800x500/CCCCCC/333333?text=Image+Block"}
               alt={alt || "Image"}
               className="w-full h-auto object-contain rounded-lg mb-4 md:mb-0"
-              onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/800x500/CCCCCC/333333?text=Image+Block`; }}
+              onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/600x400/CCCCCC/333333?text=Image+${index + 1}`; }}
             />
             {caption && <p className="text-gray-300 text-sm mt-2 text-center">{caption}</p>}
           </div>
@@ -791,6 +791,58 @@ const ScrollToTopButton = () => {
             <ArrowUp size={24} />
         </button>
     );
+};
+
+// New PageContent Component to centralize rendering logic
+const PageContent = ({
+  currentPage, loading, error, dynamicPages, portfolioProjects,
+  globalSettings, specializations, legalInfo, language, t,
+  handleSetCurrentPage, setCurrentFilter, setSelectedProjectSlug
+}) => {
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen-minus-header">
+        <div className="text-xl text-gray-300">{language === 'ar' ? 'جاري تحميل المحتوى...' : 'Loading content...'}</div>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen-minus-header text-red-400">
+        <div className="text-xl">{error}</div>
+      </div>
+    );
+  }
+
+  // Determine which component to render based on currentPage
+  if (dynamicPages[currentPage]) {
+    return <DynamicPage pageData={dynamicPages[currentPage]} language={language} t={t} />;
+  }
+  if (currentPage.startsWith('projectDetail-')) {
+    const projectSlug = currentPage.replace('projectDetail-', '');
+    const project = portfolioProjects.find(p => p.slug === projectSlug);
+    return <ProjectDetail project={project} language={language} t={t} />;
+  }
+
+  switch (currentPage) {
+    case 'home':
+      return <Hero language={language} setCurrentPage={handleSetCurrentPage} setCurrentFilter={setCurrentFilter} t={t} globalSettings={globalSettings} specializations={specializations} />;
+    case 'portfolio':
+      return <Portfolio language={language} currentFilter={currentFilter} setCurrentFilter={setCurrentFilter} t={t} portfolioProjects={portfolioProjects} setCurrentPage={handleSetCurrentPage} setSelectedProjectSlug={setSelectedProjectSlug} specializations={specializations} />;
+    case 'contact':
+      return <Contact language={language} t={t} globalSettings={globalSettings} />;
+    case 'legal':
+      return <Legal language={language} t={t} legalInfo={legalInfo} />;
+    default:
+      return (
+        <section className="py-16 text-center flex-grow flex flex-col justify-center items-center">
+          <div className="container mx-auto px-4 md:px-6 w-full">
+            <h2 className="text-3xl font-bold mb-4">{t.pageNotFound}</h2>
+            <p className="text-lg text-gray-400">{t.pageNotFoundDesc}</p>
+          </div>
+        </section>
+      );
+  }
 };
 
 
@@ -1061,45 +1113,21 @@ function App() {
         dynamicPages={dynamicPages}
       />
       <main className="flex-grow pt-16 md:pt-20">
-        {loading ? (
-          <div className="flex justify-center items-center h-screen-minus-header">
-            <div className="text-xl text-gray-300">{language === 'ar' ? 'جاري تحميل المحتوى...' : 'Loading content...'}</div>
-          </div>
-        ) : error ? (
-          <div className="flex justify-center items-center h-screen-minus-header text-red-400">
-            <div className="text-xl">{error}</div>
-          </div>
-        ) : currentPage.startsWith('projectDetail-') ? (
-          (() => {
-            const projectSlug = currentPage.replace('projectDetail-', '');
-            const project = portfolioProjects.find(p => p.slug === projectSlug);
-            return <ProjectDetail project={project} language={language} t={t} />;
-          })()
-        ) : dynamicPages[currentPage] ? (
-          <DynamicPage pageData={dynamicPages[currentPage]} language={language} t={t} />
-        ) : (
-          (() => {
-            switch (currentPage) {
-              case 'home':
-                return <Hero language={language} setCurrentPage={handleSetCurrentPage} setCurrentFilter={setCurrentFilter} t={t} globalSettings={globalSettings} specializations={specializations} />;
-              case 'portfolio':
-                return <Portfolio language={language} currentFilter={currentFilter} setCurrentFilter={setCurrentFilter} t={t} portfolioProjects={portfolioProjects} setCurrentPage={handleSetCurrentPage} setSelectedProjectSlug={setSelectedProjectSlug} specializations={specializations} />;
-              case 'contact':
-                return <Contact language={language} t={t} globalSettings={globalSettings} />;
-              case 'legal':
-                return <Legal language={language} t={t} legalInfo={legalInfo} />;
-              default:
-                return (
-                  <section className="py-16 text-center flex-grow flex flex-col justify-center items-center">
-                    <div className="container mx-auto px-4 md:px-6 w-full">
-                      <h2 className="text-3xl font-bold mb-4">{t.pageNotFound}</h2>
-                      <p className="text-lg text-gray-400">{t.pageNotFoundDesc}</p>
-                    </div>
-                  </section>
-                );
-            }
-          })()
-        )}
+        <PageContent
+          currentPage={currentPage}
+          loading={loading}
+          error={error}
+          dynamicPages={dynamicPages}
+          portfolioProjects={portfolioProjects}
+          globalSettings={globalSettings}
+          specializations={specializations}
+          legalInfo={legalInfo}
+          language={language}
+          t={t}
+          handleSetCurrentPage={handleSetCurrentPage}
+          setCurrentFilter={setCurrentFilter}
+          setSelectedProjectSlug={setSelectedProjectSlug}
+        />
       </main>
       <Footer language={language} t={t} globalSettings={globalSettings} setCurrentPage={handleSetCurrentPage} />
       <ScrollToTopButton /> {/* Add the new button */}
