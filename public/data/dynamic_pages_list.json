@@ -1,0 +1,39 @@
+{
+  "pages": [
+    {
+      "title_ar": "عنوان الصفحة (عربي) ",
+      "title_en": "عنوان الصفحة (إنجليزي) ",
+      "slug": "about-us",
+      "meta_description_ar": "وصف الميتا",
+      "meta_description_en": "Meta Description",
+      "sections": [
+        {
+          "type": "text_block",
+          "heading_ar": "عنوان القسم (عربي) (optional)",
+          "heading_en": "عنوان القسم (إنجليزي) (optional)",
+          "content_ar": "محتوى القسم (عربي)",
+          "content_en": "محتوى القسم (إنجليزي)"
+        },
+        {
+          "type": "image_block",
+          "image": "/images/6-4.jpg",
+          "alt_ar": "نص بديل للصورة (عربي) (optional)",
+          "alt_en": "نص بديل للصورة (إنجليزي) (optional)",
+          "caption_ar": "وصف الصورة (عربي) (optional)",
+          "caption_en": "وصف الصورة (إنجليزي) (optional)"
+        },
+        {
+          "heading_en": "عنوان القسم (إنجليزي) (optional)",
+          "alt_ar": "نص بديل للصورة (عربي) (optional)",
+          "image_position": "right",
+          "heading_ar": "عنوان القسم (عربي) (optional)",
+          "content_en": "محتوى القسم (إنجليزي)",
+          "content_ar": "محتوى القسم (عربي)",
+          "type": "text_image_block",
+          "image": "/images/6-4.jpg",
+          "alt_en": "نص بديل للصورة (إنجليزي) (optional)"
+        }
+      ]
+    }
+  ]
+}
