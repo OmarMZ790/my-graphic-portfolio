@@ -124,7 +124,7 @@ const Header = ({ setCurrentPage, currentPage, language, setLanguage, t, isSideb
     }
   };
 
-  const designerName = language === 'ar' ? globalSettings.designer_name_ar : globalSettings.designer_en;
+  const designerName = language === 'ar' ? globalSettings.designer_name_ar : globalSettings.designer_name_en; // Corrected from designer_en
 
   return (
     <header className={`fixed top-0 w-full z-50 shadow-lg transition-all duration-300 bg-gray-800 text-white
@@ -620,7 +620,7 @@ const SectionRenderer = ({ section, language, t }) => {
               src={section.image || "https://placehold.co/800x500/CCCCCC/333333?text=Image+Block"}
               alt={alt || "Image"}
               className="w-full h-auto object-contain rounded-lg mb-4 md:mb-0"
-              onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/800x500/CCCCCC/333333?text=Image+Block"; }}
+              onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/800x500/CCCCCC/333333?text=Image+Block`; }}
             />
             {caption && <p className="text-gray-300 text-sm mt-2 text-center">{caption}</p>}
           </div>
@@ -637,19 +637,9 @@ const SectionRenderer = ({ section, language, t }) => {
 
 // Dynamic Page Component
 const DynamicPage = ({ pageData, language, t }) => {
-  if (!pageData || !pageData.sections) {
-    return (
-      <section className="py-16 text-center flex-grow flex flex-col justify-center items-center">
-        <div className="container mx-auto px-4 md:px-6 w-full">
-          <h2 className="text-3xl font-bold mb-4">{t.pageNotFound}</h2>
-          <p className="text-lg text-gray-400">{t.pageNotFoundDesc}</p>
-        </div>
-      </section>
-    );
-  }
-
-  const pageTitle = language === 'ar' ? pageData.title_ar : pageData.title_en;
-  const metaDescription = language === 'ar' ? pageData.meta_description_ar : pageData.meta_description_en;
+  // Define these variables unconditionally at the top of the component
+  const pageTitle = pageData ? (language === 'ar' ? pageData.title_ar : pageData.title_en) : t.pageNotFound;
+  const metaDescription = pageData ? (language === 'ar' ? pageData.meta_description_ar : pageData.meta_description_en) : t.pageNotFoundDesc;
 
   // Update document title and meta description for dynamic pages
   useEffect(() => {
@@ -667,16 +657,25 @@ const DynamicPage = ({ pageData, language, t }) => {
     }
     // Restore default meta description if navigating away from a dynamic page
     return () => {
-      if (metaDescription) {
-        const defaultMetaDescription = language === 'ar' ? translations.ar.metaDescription : translations.en.metaDescription; // This should be translations.ar.meta_description_ar etc.
-        let metaDescTag = document.querySelector('meta[name="description"]');
-        if (metaDescTag) {
-          metaDescTag.setAttribute('content', defaultMetaDescription);
-        }
+      // Corrected fallback reference for meta description
+      const defaultMetaDescription = language === 'ar' ? translations.ar.meta_description_ar : translations.en.meta_description_en;
+      let metaDescTag = document.querySelector('meta[name="description"]');
+      if (metaDescTag) {
+        metaDescTag.setAttribute('content', defaultMetaDescription);
       }
     };
-  }, [pageData, language, pageTitle, metaDescription]);
+  }, [pageData, language, pageTitle, metaDescription, t]); // Added t to dependencies
 
+  if (!pageData || !pageData.sections) {
+    return (
+      <section className="py-16 text-center flex-grow flex flex-col justify-center items-center">
+        <div className="container mx-auto px-4 md:px-6 w-full">
+          <h2 className="text-3xl font-bold mb-4">{t.pageNotFound}</h2>
+          <p className="text-lg text-gray-400">{t.pageNotFoundDesc}</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-16 flex-grow flex flex-col justify-between">
