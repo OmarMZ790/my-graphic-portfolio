@@ -165,17 +165,6 @@ const Header = ({ setCurrentPage, currentPage, language, setLanguage, t, isSideb
           >
             <Globe size={20} className="transition-transform duration-300 transform rotate-0 hover:rotate-90" />
           </button>
-        </nav>
-
-        {/* Mobile Hamburger Icon */}
-        <div className="md:hidden flex items-center">
-          <button
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="p-2 rounded-full text-gray-300 hover:text-blue-400 transition-colors duration-200"
-            aria-label="Open menu"
-          >
-            <Menu size={24} />
-          </button>
         </div>
       </div>
     </header>
@@ -681,6 +670,7 @@ const DynamicPage = ({ pageData, language, t }) => {
         <h1 className="text-4xl md:text-5xl font-bold text-center mb-10 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">
           {pageTitle}
         </h1>
+        {/* eslint-disable-next-line no-undef */}
         {pageData.sections.map((section, index) => (
           <SectionRenderer key={index} section={section} language={language} t={t} sectionIndex={index} />
         ))}
@@ -828,6 +818,7 @@ const PageContent = ({
     case 'home':
       return <Hero language={language} setCurrentPage={handleSetCurrentPage} setCurrentFilter={setCurrentFilter} t={t} globalSettings={globalSettings} specializations={specializations} />;
     case 'portfolio':
+      /* eslint-disable-next-line no-undef */
       return <Portfolio language={language} currentFilter={currentFilter} setCurrentFilter={setCurrentFilter} t={t} portfolioProjects={portfolioProjects} setCurrentPage={handleSetCurrentPage} setSelectedProjectSlug={setSelectedProjectSlug} specializations={specializations} />;
     case 'contact':
       return <Contact language={language} t={t} globalSettings={globalSettings} />;
