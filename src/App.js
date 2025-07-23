@@ -706,8 +706,9 @@ const Legal = ({ language, t, legalInfo }) => {
       document.head.appendChild(metaDescTag);
     }
     // Use a specific meta description for legal page if available, otherwise fallback
-    const legalMetaDesc = language === 'ar' ? translations.ar.legalTitle : translations.en.legalTitle; // Using title as fallback for now
-    metaDescTag.setAttribute('content', legalInfo.meta_description_ar || legalMetaDesc); // Assuming legalInfo could have its own meta_description
+    // Corrected to use meta_description_ar/en from legalInfo if available, otherwise global default.
+    const legalMetaDesc = language === 'ar' ? (legalInfo.meta_description_ar || translations.ar.legalTitle) : (legalInfo.meta_description_en || translations.en.legalTitle);
+    metaDescTag.setAttribute('content', legalMetaDesc);
 
     return () => {
       const defaultMetaDescription = language === 'ar' ? translations.ar.meta_description_ar : translations.en.meta_description_en;
@@ -741,7 +742,7 @@ const Footer = ({ language, t, globalSettings, setCurrentPage }) => {
     <footer className="py-8 text-center text-sm opacity-80 mt-12 bg-gray-800 text-gray-300">
       <div className="container mx-auto px-4 md:px-6 flex flex-col items-center justify-center">
         {/* Copyright - now last */}
-        <p className="mb-4">&copy; {new Date().getFullYear()} {designerName || t.name}. {t.copyright}</p> {/* Added mb-4 to copyright */}
+        <p className="mb-4">&copy; {new Date().getFullYear()} {designerName || t.name}. {t.copyright}</p>
         {/* Contact Us Button - now below copyright */}
         <button
           onClick={() => setCurrentPage('contact')}
@@ -879,28 +880,16 @@ function App() {
     }
   };
 
-  // Update document title and meta description dynamically for static pages (home, portfolio, contact, legal)
+  // Update document title and meta description dynamically for all pages
   useEffect(() => {
     let titleToSet = '';
     let metaDescToSet = '';
 
-    // Prioritize dynamic page titles and meta descriptions
-    if (dynamicPages[currentPage]) {
+    // Determine the title and meta description based on the current page
+    if (dynamicPages[currentPage]) { // Dynamic pages
       titleToSet = language === 'ar' ? dynamicPages[currentPage].title_ar : dynamicPages[currentPage].title_en;
       metaDescToSet = language === 'ar' ? dynamicPages[currentPage].meta_description_ar : dynamicPages[currentPage].meta_description_en;
-    } else if (currentPage === 'home') {
-      titleToSet = language === 'ar' ? globalSettings.page_title_ar : globalSettings.page_title_en;
-      metaDescToSet = language === 'ar' ? globalSettings.meta_description_ar : globalSettings.meta_description_en;
-    } else if (currentPage === 'portfolio') {
-      titleToSet = t.portfolio;
-      metaDescToSet = t.portfolioDescription; // Using translation for meta description
-    } else if (currentPage === 'contact') {
-      titleToSet = t.contact;
-      metaDescToSet = t.contactDescription; // Using translation for meta description
-    } else if (currentPage === 'legal') {
-      titleToSet = language === 'ar' ? legalInfo.title_ar : legalInfo.title_en;
-      metaDescToSet = language === 'ar' ? legalInfo.meta_description_ar || t.legalTitle : legalInfo.meta_description_en || t.legalTitle; // Fallback for legal meta
-    } else if (currentPage.startsWith('projectDetail-')) {
+    } else if (currentPage.startsWith('projectDetail-')) { // Project detail pages
         const projectSlug = currentPage.replace('projectDetail-', '');
         const project = portfolioProjects.find(p => p.slug === projectSlug);
         if (project) {
@@ -910,16 +899,33 @@ function App() {
             titleToSet = t.projectNotFound;
             metaDescToSet = t.projectNotFoundDesc;
         }
-    } else {
-      // Fallback for any unknown page (should ideally not happen with hash routing)
-      titleToSet = t.pageNotFound;
-      metaDescToSet = t.pageNotFoundDesc;
+    } else { // Static pages (home, portfolio, contact, legal)
+      switch (currentPage) {
+        case 'home':
+          titleToSet = language === 'ar' ? globalSettings.page_title_ar : globalSettings.page_title_en;
+          metaDescToSet = language === 'ar' ? globalSettings.meta_description_ar : globalSettings.meta_description_en;
+          break;
+        case 'portfolio':
+          titleToSet = t.portfolio;
+          metaDescToSet = t.portfolioDescription;
+          break;
+        case 'contact':
+          titleToSet = t.contact;
+          metaDescToSet = t.contactDescription;
+          break;
+        case 'legal':
+          titleToSet = language === 'ar' ? legalInfo.title_ar : legalInfo.title_en;
+          metaDescToSet = language === 'ar' ? (legalInfo.meta_description_ar || t.legalTitle) : (legalInfo.meta_description_en || t.legalTitle);
+          break;
+        default: // Fallback for unknown pages (should ideally not happen with hash routing)
+          titleToSet = t.pageNotFound;
+          metaDescToSet = t.pageNotFoundDesc;
+          break;
+      }
     }
 
     // Set document title
-    if (titleToSet) {
-      document.title = titleToSet;
-    }
+    document.title = titleToSet || (language === 'ar' ? translations.ar.page_title_ar : translations.en.page_title_en); // Fallback to default site title
 
     // Set meta description
     let metaDescTag = document.querySelector('meta[name="description"]');
@@ -928,7 +934,7 @@ function App() {
       metaDescTag.setAttribute('name', 'description');
       document.head.appendChild(metaDescTag);
     }
-    metaDescTag.setAttribute('content', metaDescToSet);
+    metaDescTag.setAttribute('content', metaDescToSet || (language === 'ar' ? translations.ar.meta_description_ar : translations.en.meta_description_en)); // Fallback to default site meta description
 
     // Set favicon
     const favicon = globalSettings.favicon;
@@ -1032,56 +1038,6 @@ function App() {
 
   const t = translations[language];
 
-  // Render content based on currentPage
-  const renderPage = () => {
-    if (loading) {
-      return (
-        <div className="flex justify-center items-center h-screen-minus-header">
-          <div className="text-xl text-gray-300">{language === 'ar' ? 'جاري تحميل المحتوى...' : 'Loading content...'}</div>
-        </div>
-      );
-    }
-    if (error) {
-      return (
-        <div className="flex justify-center items-center h-screen-minus-header text-red-400">
-          <div className="text-xl">{error}</div>
-        </div>
-      );
-    }
-
-    // Check if currentPage matches a dynamic page slug
-    if (dynamicPages[currentPage]) {
-      return <DynamicPage pageData={dynamicPages[currentPage]} language={language} t={t} />;
-    }
-    // Handle project detail page based on slug
-    if (currentPage.startsWith('projectDetail-')) {
-        const projectSlug = currentPage.replace('projectDetail-', '');
-        const project = portfolioProjects.find(p => p.slug === projectSlug);
-        return <ProjectDetail project={project} language={language} t={t} />;
-    }
-
-    switch (currentPage) {
-      case 'home':
-        return <Hero language={language} setCurrentPage={handleSetCurrentPage} setCurrentFilter={setCurrentFilter} t={t} globalSettings={globalSettings} specializations={specializations} />;
-      case 'portfolio':
-        return <Portfolio language={language} currentFilter={currentFilter} setCurrentFilter={setCurrentFilter} t={t} portfolioProjects={portfolioProjects} setCurrentPage={handleSetCurrentPage} setSelectedProjectSlug={setSelectedProjectSlug} specializations={specializations} />;
-      case 'contact':
-        return <Contact language={language} t={t} globalSettings={globalSettings} />;
-      case 'legal':
-        return <Legal language={language} t={t} legalInfo={legalInfo} />;
-      default:
-        // Fallback for unknown pages (e.g., if a dynamic page slug is invalid)
-        return (
-          <section className="py-16 text-center flex-grow flex flex-col justify-center items-center">
-            <div className="container mx-auto px-4 md:px-6 w-full">
-              <h2 className="text-3xl font-bold mb-4">{t.pageNotFound}</h2>
-              <p className="text-lg text-gray-400">{t.pageNotFoundDesc}</p>
-            </div>
-          </section>
-        );
-    }
-  };
-
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-gray-100">
       <Header
@@ -1106,7 +1062,45 @@ function App() {
         dynamicPages={dynamicPages}
       />
       <main className="flex-grow pt-16 md:pt-20">
-        {renderPage()}
+        {loading ? (
+          <div className="flex justify-center items-center h-screen-minus-header">
+            <div className="text-xl text-gray-300">{language === 'ar' ? 'جاري تحميل المحتوى...' : 'Loading content...'}</div>
+          </div>
+        ) : error ? (
+          <div className="flex justify-center items-center h-screen-minus-header text-red-400">
+            <div className="text-xl">{error}</div>
+          </div>
+        ) : dynamicPages[currentPage] ? (
+          <DynamicPage pageData={dynamicPages[currentPage]} language={language} t={t} />
+        ) : currentPage.startsWith('projectDetail-') ? (
+          (() => {
+            const projectSlug = currentPage.replace('projectDetail-', '');
+            const project = portfolioProjects.find(p => p.slug === projectSlug);
+            return <ProjectDetail project={project} language={language} t={t} />;
+          })()
+        ) : (
+          (() => {
+            switch (currentPage) {
+              case 'home':
+                return <Hero language={language} setCurrentPage={handleSetCurrentPage} setCurrentFilter={setCurrentFilter} t={t} globalSettings={globalSettings} specializations={specializations} />;
+              case 'portfolio':
+                return <Portfolio language={language} currentFilter={currentFilter} setCurrentFilter={setCurrentFilter} t={t} portfolioProjects={portfolioProjects} setCurrentPage={handleSetCurrentPage} setSelectedProjectSlug={setSelectedProjectSlug} specializations={specializations} />;
+              case 'contact':
+                return <Contact language={language} t={t} globalSettings={globalSettings} />;
+              case 'legal':
+                return <Legal language={language} t={t} legalInfo={legalInfo} />;
+              default:
+                return (
+                  <section className="py-16 text-center flex-grow flex flex-col justify-center items-center">
+                    <div className="container mx-auto px-4 md:px-6 w-full">
+                      <h2 className="text-3xl font-bold mb-4">{t.pageNotFound}</h2>
+                      <p className="text-lg text-gray-400">{t.pageNotFoundDesc}</p>
+                    </div>
+                  </section>
+                );
+            }
+          })()
+        )}
       </main>
       <Footer language={language} t={t} globalSettings={globalSettings} setCurrentPage={handleSetCurrentPage} />
       <ScrollToTopButton /> {/* Add the new button */}
