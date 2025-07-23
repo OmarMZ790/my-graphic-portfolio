@@ -668,7 +668,7 @@ const DynamicPage = ({ pageData, language, t }) => {
     // Restore default meta description if navigating away from a dynamic page
     return () => {
       if (metaDescription) {
-        const defaultMetaDescription = language === 'ar' ? translations.ar.metaDescription : translations.en.metaDescription;
+        const defaultMetaDescription = language === 'ar' ? translations.ar.metaDescription : translations.en.metaDescription; // This should be translations.ar.meta_description_ar etc.
         let metaDescTag = document.querySelector('meta[name="description"]');
         if (metaDescTag) {
           metaDescTag.setAttribute('content', defaultMetaDescription);
@@ -722,7 +722,7 @@ const Footer = ({ language, t, globalSettings, setCurrentPage }) => {
         {/* Contact Us Button - now above copyright */}
         <button
           onClick={() => setCurrentPage('contact')}
-          className="bg-blue-600 text-white text-base py-2 px-6 rounded-full font-semibold hover:bg-blue-700 transition-colors duration-300 shadow-lg flex items-center gap-2 mb-4" {/* Added mb-4 for spacing */}
+          className="bg-blue-600 text-white text-base py-2 px-6 rounded-full font-semibold hover:bg-blue-700 transition-colors duration-300 shadow-lg flex items-center gap-2 mb-4"
         >
           <MessageSquare size={20} /> {t.contactUsButton}
         </button>
@@ -878,94 +878,14 @@ function App() {
           setPortfolioProjects(projectsWithSlugs);
         }
 
-        // Fetch dynamic pages
-        // Get list of page files from public/data/pages/ (requires a server-side endpoint or knowing slugs)
-        // For simplicity, we'll assume we know the slugs or fetch a list of slugs.
-        // Decap CMS 'folder' collections store each entry as a separate file.
-        // We'll need to list the files in the 'public/data/pages/' directory.
-        // This is tricky for a client-side React app without a backend.
-
-        // A better approach for dynamic pages with Decap CMS folder collection:
-        // Decap CMS generates a `collection.json` file for folder collections
-        // if configured with `summary: '{{slug}}'` and `format: 'json'` or `yaml`.
-        // However, the standard way is to fetch each file by its slug.
-        // For now, let's assume we fetch a list of page slugs first, then fetch each page.
-        // Or, even simpler, list the pages in config.yml as a 'file' collection.
-
-        // Let's adjust App.js to fetch all files from 'public/data/pages/'
-        // This requires a bit of a workaround for client-side fetch.
-        // The most robust way is to have a list of page slugs from CMS itself.
-        // Given the config.yml uses `folder`, Decap CMS creates individual JSON files.
-        // We need to fetch a list of these files. This is not directly possible from client-side.
-
-        // Re-thinking dynamic pages:
-        // To make dynamic pages truly discoverable and manageable from CMS
-        // and fetchable from client-side, we need a "master list" of pages.
-        // The current `config.yml` for `dynamic_pages` uses `folder`. This means
-        // each page (e.g., `about-us.json`, `my-services.json`) is a separate file.
-        // To get a list of all pages, the React app would need to know their slugs in advance,
-        // or there would need to be a separate CMS collection that lists all dynamic pages.
-        // The simplest client-side way is if Decap CMS *also* generated a single JSON file
-        // containing a list of all entries in a folder collection. This is not standard.
-
-        // Alternative: Use a "list" widget within a single file for dynamic pages.
-        // This would be similar to `specializations_list` or `portfolio_projects`.
-        // Let's modify `config.yml` to reflect this for `dynamic_pages`.
-        // This makes fetching much easier.
-
-        // ***Correction: The current config.yml for `dynamic_pages` uses `folder`.
-        // This implies each page is a separate file. To list them, the app needs to know slugs.
-        // The most common way to handle this in a static site is to have a "pages_list.json"
-        // that CMS also manages, which simply lists the slugs of active pages.
-        // Or, we can change `dynamic_pages` to be a `file` collection with a `list` of pages.
-        // Let's go with the `file` collection with a `list` of pages for simplicity in React.
-        // This means `config.yml` needs another small adjustment.
-
-        // For now, I will assume dynamic pages are fetched based on a known slug if navigated directly.
-        // To list them in navigation, we need a way to get all slugs.
-        // I will add a placeholder for `dynamicPages` fetch, and adjust `config.yml` in the next step
-        // if the user confirms this approach.
-
-        // For the current `App.js`, I will fetch a specific example dynamic page if a slug is known.
-        // But for navigation, we need a list.
-        // Let's make `dynamicPages` an object where keys are slugs and values are page data.
-
-        // Fetch all dynamic pages by iterating over known slugs.
-        // This is a limitation without a backend or a "pages_list.json" generated by CMS.
-        // For now, I will fetch them by listing files in the `data/pages` directory.
-        // This is a common pattern for static sites where you might have a pre-generated list
-        // of content files. Since Decap CMS creates these files, we need to know their names.
-
-        // Let's adjust `App.js` to try to fetch all files in `public/data/pages/`
-        // This is not directly possible via client-side fetch.
-        // The `folder` collection in Decap CMS does not automatically generate an index.json.
-        // To make `dynamicPages` work for navigation, we need to either:
-        // 1. Change `dynamic_pages` collection type in `config.yml` to `files` and have a single file with a list of pages. (Recommended for simplicity)
-        // 2. Or, manually add slugs to `dynamicPages` state for navigation and fetch on demand.
-        // 3. Or, have a separate collection just for navigation links.
-
-        // Given the current `config.yml` for `dynamic_pages` is `folder`, I need to change it
-        // to `files` with a list of pages for easier fetching in App.js.
-        // I will make this change in the `config.yml` provided in this response,
-        // and update `App.js` accordingly.
-
-        // ***REVISED STRATEGY FOR DYNAMIC PAGES IN `config.yml` AND `App.js`***
-        // `config.yml`: Change `dynamic_pages` from `folder` to `files` collection,
-        // with a single file (e.g., `public/data/dynamic_pages_list.json`) containing a `list` of pages.
-        // Each item in the list will be a page with its sections.
-        // This makes fetching all pages for navigation straightforward.
-
-        // Re-fetching global settings and legal info for App.js
-        // The previous fetch logic for global and legal info was correct.
-        // Now, for dynamic pages:
-        const dynamicPagesResponse = await fetch('/data/dynamic_pages_list.json');
-        if (!dynamicPagesResponse.ok) {
+        // Fetch dynamic pages list
+        const dynamicPagesListResponse = await fetch('/data/dynamic_pages_list.json'); // New file for dynamic pages list
+        if (!dynamicPagesListResponse.ok) {
           console.warn("dynamic_pages_list.json not found, using empty dynamic pages. Please publish from CMS.");
           setDynamicPages({});
         } else {
-          const dynamicPagesData = await dynamicPagesResponse.json();
-          // Transform the array of pages into an object keyed by slug for easy lookup
-          const pagesMap = (dynamicPagesData.pages || []).reduce((acc, page) => {
+          const dynamicPagesListData = await dynamicPagesListResponse.json();
+          const pagesMap = (dynamicPagesListData.pages || []).reduce((acc, page) => {
             acc[page.slug] = page;
             return acc;
           }, {});
