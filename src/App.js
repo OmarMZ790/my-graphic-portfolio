@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as LucideIcons from 'lucide-react'; // Import all Lucide icons needed for dynamic use
-import { Globe, Mail, Phone, Eye, MessageSquare, Menu, X as CloseIcon, ChevronLeft, ChevronRight, LayoutList, Image, Text, TextSelect } from 'lucide-react'; // Added icons for dynamic pages
+import { Globe, Mail, Phone, Eye, MessageSquare, Menu, X as CloseIcon, ChevronLeft, ChevronRight, LayoutList, Image, Text, TextSelect, ArrowUp } from 'lucide-react'; // Added ArrowUp for scroll to top
 
 // Translations object (will be merged with CMS data)
 const translations = {
@@ -124,16 +124,17 @@ const Header = ({ setCurrentPage, currentPage, language, setLanguage, t, isSideb
     }
   };
 
-  const designerName = language === 'ar' ? globalSettings.designer_name_ar : globalSettings.designer_name_en; // Corrected from designer_en
+  const designerName = language === 'ar' ? globalSettings.designer_name_ar : globalSettings.designer_name_en;
 
   return (
     <header className={`fixed top-0 w-full z-50 shadow-lg transition-all duration-300 bg-gray-800 text-white
       ${isScrolled ? 'py-2 text-sm bg-opacity-90 backdrop-blur-sm' : 'py-4 text-base bg-opacity-100 backdrop-blur-none'}`}>
       <div className="container mx-auto flex justify-between items-center px-4 md:px-6">
-        <h1 className={`font-bold rounded-md px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transition-all duration-300
-          ${isScrolled ? 'text-xl' : 'text-2xl'}`}>
+        {/* Clickable Designer Name */}
+        <button onClick={() => setCurrentPage('home')} className={`font-bold rounded-md px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transition-all duration-300
+          ${isScrolled ? 'text-xl' : 'text-2xl'} cursor-pointer`}>
           {designerName || t.name}
-        </h1>
+        </button>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-4 lg:space-x-8">
@@ -347,7 +348,7 @@ const Portfolio = ({ language, currentFilter, setCurrentFilter, t, portfolioProj
 
   const handleViewProject = (project) => {
     setSelectedProjectSlug(project.slug);
-    setCurrentPage('projectDetail');
+    setCurrentPage(`projectDetail-${project.slug}`); // Update page with project slug for URL
   };
 
   const paginate = (pageNumber) => {
@@ -643,28 +644,25 @@ const DynamicPage = ({ pageData, language, t }) => {
 
   // Update document title and meta description for dynamic pages
   useEffect(() => {
-    if (pageTitle) {
-      document.title = pageTitle;
+    document.title = pageTitle;
+
+    let metaDescTag = document.querySelector('meta[name="description"]');
+    if (!metaDescTag) {
+      metaDescTag = document.createElement('meta');
+      metaDescTag.setAttribute('name', 'description');
+      document.head.appendChild(metaDescTag);
     }
-    if (metaDescription) {
-      let metaDescTag = document.querySelector('meta[name="description"]');
-      if (!metaDescTag) {
-        metaDescTag = document.createElement('meta');
-        metaDescTag.setAttribute('name', 'description');
-        document.head.appendChild(metaDescTag);
-      }
-      metaDescTag.setAttribute('content', metaDescription);
-    }
+    metaDescTag.setAttribute('content', metaDescription);
+
     // Restore default meta description if navigating away from a dynamic page
     return () => {
-      // Corrected fallback reference for meta description
       const defaultMetaDescription = language === 'ar' ? translations.ar.meta_description_ar : translations.en.meta_description_en;
-      let metaDescTag = document.querySelector('meta[name="description"]');
-      if (metaDescTag) {
-        metaDescTag.setAttribute('content', defaultMetaDescription);
+      let existingMetaDescTag = document.querySelector('meta[name="description"]');
+      if (existingMetaDescTag) {
+        existingMetaDescTag.setAttribute('content', defaultMetaDescription);
       }
     };
-  }, [pageData, language, pageTitle, metaDescription, t]); // Added t to dependencies
+  }, [pageData, language, pageTitle, metaDescription, t]);
 
   if (!pageData || !pageData.sections) {
     return (
@@ -697,6 +695,30 @@ const Legal = ({ language, t, legalInfo }) => {
   const legalTitle = language === 'ar' ? legalInfo.title_ar : legalInfo.title_en;
   const legalContentHtml = language === 'ar' ? legalInfo.content_ar : legalInfo.content_en;
 
+  // Update document title and meta description for Legal page
+  useEffect(() => {
+    document.title = legalTitle || t.legalTitle;
+
+    let metaDescTag = document.querySelector('meta[name="description"]');
+    if (!metaDescTag) {
+      metaDescTag = document.createElement('meta');
+      metaDescTag.setAttribute('name', 'description');
+      document.head.appendChild(metaDescTag);
+    }
+    // Use a specific meta description for legal page if available, otherwise fallback
+    const legalMetaDesc = language === 'ar' ? translations.ar.legalTitle : translations.en.legalTitle; // Using title as fallback for now
+    metaDescTag.setAttribute('content', legalInfo.meta_description_ar || legalMetaDesc); // Assuming legalInfo could have its own meta_description
+
+    return () => {
+      const defaultMetaDescription = language === 'ar' ? translations.ar.meta_description_ar : translations.en.meta_description_en;
+      let existingMetaDescTag = document.querySelector('meta[name="description"]');
+      if (existingMetaDescTag) {
+        existingMetaDescTag.setAttribute('content', defaultMetaDescription);
+      }
+    };
+  }, [legalInfo, language, legalTitle, t]);
+
+
   return (
     <section className="py-16 flex-grow flex flex-col justify-between">
       <div className="container mx-auto px-4 md:px-6">
@@ -718,24 +740,66 @@ const Footer = ({ language, t, globalSettings, setCurrentPage }) => {
   return (
     <footer className="py-8 text-center text-sm opacity-80 mt-12 bg-gray-800 text-gray-300">
       <div className="container mx-auto px-4 md:px-6 flex flex-col items-center justify-center">
-        {/* Contact Us Button - now above copyright */}
+        {/* Copyright - now last */}
+        <p className="mb-4">&copy; {new Date().getFullYear()} {designerName || t.name}. {t.copyright}</p> {/* Added mb-4 to copyright */}
+        {/* Contact Us Button - now below copyright */}
         <button
           onClick={() => setCurrentPage('contact')}
-          className="bg-blue-600 text-white text-base py-2 px-6 rounded-full font-semibold hover:bg-blue-700 transition-colors duration-300 shadow-lg flex items-center gap-2 mb-4"
+          className="bg-blue-600 text-white text-base py-2 px-6 rounded-full font-semibold hover:bg-blue-700 transition-colors duration-300 shadow-lg flex items-center gap-2"
         >
           <MessageSquare size={20} /> {t.contactUsButton}
         </button>
-        {/* Copyright - now last */}
-        <p>&copy; {new Date().getFullYear()} {designerName || t.name}. {t.copyright}</p>
       </div>
     </footer>
   );
 };
 
+// ScrollToTop Button Component
+const ScrollToTopButton = () => {
+    const [isVisible, setIsVisible] = useState(false);
+
+    const toggleVisibility = () => {
+        if (window.pageYOffset > 300) { // Show button after scrolling 300px
+            setIsVisible(true);
+        } else {
+            setIsVisible(false);
+        }
+    };
+
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    };
+
+    useEffect(() => {
+        window.addEventListener('scroll', toggleVisibility);
+        return () => {
+            window.removeEventListener('scroll', toggleVisibility);
+        };
+    }, []);
+
+    return (
+        <button
+            onClick={scrollToTop}
+            className={`fixed bottom-6 right-6 md:bottom-8 md:right-8 bg-blue-600 text-white p-3 rounded-full shadow-lg transition-opacity duration-300 z-50
+                        ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            aria-label="Scroll to top"
+        >
+            <ArrowUp size={24} />
+        </button>
+    );
+};
+
+
 // Main App Component
 function App() {
   // Initialize state from localStorage or browser preferences
   const [currentPage, setCurrentPage] = useState(() => {
+    // Read initial page from hash if available
+    const hash = window.location.hash.substring(1);
+    if (hash) return hash;
     const savedPage = localStorage.getItem('currentPage');
     return savedPage ? savedPage : 'home';
   });
@@ -777,30 +841,87 @@ function App() {
     localStorage.setItem('language', language);
   }, [language]);
 
-  // Save currentPage to localStorage whenever it changes
+  // Update currentPage based on hash changes
   useEffect(() => {
-    localStorage.setItem('currentPage', currentPage);
-  }, [currentPage]);
+    const handleHashChange = () => {
+      const hash = window.location.hash.substring(1); // Remove '#'
+      if (hash) {
+        // Handle projectDetail slugs
+        if (hash.startsWith('projectDetail-')) {
+          const slug = hash.replace('projectDetail-', '');
+          setSelectedProjectSlug(slug);
+          setCurrentPage('projectDetail');
+        } else {
+          setCurrentPage(hash);
+        }
+      } else {
+        setCurrentPage('home'); // Default to home if no hash
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    handleHashChange(); // Call once on mount to set initial page
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []); // Empty dependency array means this runs once on mount
+
+  // Modify setCurrentPage to also update hash
+  const handleSetCurrentPage = (pageName) => {
+    setCurrentPage(pageName);
+    // Update URL hash based on pageName
+    if (pageName === 'home') {
+      window.location.hash = ''; // Clear hash for home
+    } else if (pageName === 'projectDetail') {
+      // This case is handled by handleViewProject in Portfolio component
+      // No direct hash update here, as slug is needed.
+    }
+    else {
+      window.location.hash = pageName;
+    }
+  };
 
   // Update document title and meta description dynamically for static pages (home, portfolio, contact, legal)
   useEffect(() => {
-    const defaultPageTitle = language === 'ar' ? translations.ar.page_title_ar : translations.en.page_title_en;
-    const defaultMetaDescription = language === 'ar' ? translations.ar.meta_description_ar : translations.en.meta_description_en;
-    const favicon = globalSettings.favicon;
+    let titleToSet = '';
+    let metaDescToSet = '';
 
-    let titleToSet = defaultPageTitle;
-    let metaDescToSet = defaultMetaDescription;
-
-    // Override with global settings if available and on a static page
-    if (globalSettings.page_title_ar && (currentPage === 'home' || currentPage === 'portfolio' || currentPage === 'contact' || currentPage === 'legal')) {
+    // Prioritize dynamic page titles and meta descriptions
+    if (dynamicPages[currentPage]) {
+      titleToSet = language === 'ar' ? dynamicPages[currentPage].title_ar : dynamicPages[currentPage].title_en;
+      metaDescToSet = language === 'ar' ? dynamicPages[currentPage].meta_description_ar : dynamicPages[currentPage].meta_description_en;
+    } else if (currentPage === 'home') {
       titleToSet = language === 'ar' ? globalSettings.page_title_ar : globalSettings.page_title_en;
-    }
-    if (globalSettings.meta_description_ar && (currentPage === 'home' || currentPage === 'portfolio' || currentPage === 'contact' || currentPage === 'legal')) {
       metaDescToSet = language === 'ar' ? globalSettings.meta_description_ar : globalSettings.meta_description_en;
+    } else if (currentPage === 'portfolio') {
+      titleToSet = t.portfolio;
+      metaDescToSet = t.portfolioDescription; // Using translation for meta description
+    } else if (currentPage === 'contact') {
+      titleToSet = t.contact;
+      metaDescToSet = t.contactDescription; // Using translation for meta description
+    } else if (currentPage === 'legal') {
+      titleToSet = language === 'ar' ? legalInfo.title_ar : legalInfo.title_en;
+      metaDescToSet = language === 'ar' ? legalInfo.meta_description_ar || t.legalTitle : legalInfo.meta_description_en || t.legalTitle; // Fallback for legal meta
+    } else if (currentPage.startsWith('projectDetail-')) {
+        const projectSlug = currentPage.replace('projectDetail-', '');
+        const project = portfolioProjects.find(p => p.slug === projectSlug);
+        if (project) {
+            titleToSet = language === 'ar' ? project.title_ar : project.title_en;
+            metaDescToSet = language === 'ar' ? project.short_description_ar : project.short_description_en;
+        } else {
+            titleToSet = t.projectNotFound;
+            metaDescToSet = t.projectNotFoundDesc;
+        }
+    } else {
+      // Fallback for any unknown page (should ideally not happen with hash routing)
+      titleToSet = t.pageNotFound;
+      metaDescToSet = t.pageNotFoundDesc;
     }
 
-    document.title = titleToSet;
+    // Set document title
+    if (titleToSet) {
+      document.title = titleToSet;
+    }
 
+    // Set meta description
     let metaDescTag = document.querySelector('meta[name="description"]');
     if (!metaDescTag) {
       metaDescTag = document.createElement('meta');
@@ -809,6 +930,8 @@ function App() {
     }
     metaDescTag.setAttribute('content', metaDescToSet);
 
+    // Set favicon
+    const favicon = globalSettings.favicon;
     if (favicon) {
       let link = document.querySelector("link[rel~='icon']");
       if (!link) {
@@ -818,7 +941,7 @@ function App() {
       }
       link.href = favicon;
     }
-  }, [globalSettings, language, currentPage]);
+  }, [globalSettings, language, currentPage, dynamicPages, legalInfo, portfolioProjects, t]);
 
 
   // Fetch data from CMS-generated JSON files
@@ -930,15 +1053,18 @@ function App() {
     if (dynamicPages[currentPage]) {
       return <DynamicPage pageData={dynamicPages[currentPage]} language={language} t={t} />;
     }
+    // Handle project detail page based on slug
+    if (currentPage.startsWith('projectDetail-')) {
+        const projectSlug = currentPage.replace('projectDetail-', '');
+        const project = portfolioProjects.find(p => p.slug === projectSlug);
+        return <ProjectDetail project={project} language={language} t={t} />;
+    }
 
     switch (currentPage) {
       case 'home':
-        return <Hero language={language} setCurrentPage={setCurrentPage} setCurrentFilter={setCurrentFilter} t={t} globalSettings={globalSettings} specializations={specializations} />;
+        return <Hero language={language} setCurrentPage={handleSetCurrentPage} setCurrentFilter={setCurrentFilter} t={t} globalSettings={globalSettings} specializations={specializations} />;
       case 'portfolio':
-        return <Portfolio language={language} currentFilter={currentFilter} setCurrentFilter={setCurrentFilter} t={t} portfolioProjects={portfolioProjects} setCurrentPage={setCurrentPage} setSelectedProjectSlug={setSelectedProjectSlug} specializations={specializations} />;
-      case 'projectDetail':
-        const project = portfolioProjects.find(p => p.slug === selectedProjectSlug);
-        return <ProjectDetail project={project} language={language} t={t} />;
+        return <Portfolio language={language} currentFilter={currentFilter} setCurrentFilter={setCurrentFilter} t={t} portfolioProjects={portfolioProjects} setCurrentPage={handleSetCurrentPage} setSelectedProjectSlug={setSelectedProjectSlug} specializations={specializations} />;
       case 'contact':
         return <Contact language={language} t={t} globalSettings={globalSettings} />;
       case 'legal':
@@ -959,7 +1085,7 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-gray-100">
       <Header
-        setCurrentPage={setCurrentPage}
+        setCurrentPage={handleSetCurrentPage} // Use the new handler
         currentPage={currentPage}
         language={language}
         setLanguage={setLanguage}
@@ -972,7 +1098,7 @@ function App() {
       <Sidebar
         isOpen={isSidebarOpen}
         setIsOpen={setIsSidebarOpen}
-        setCurrentPage={setCurrentPage}
+        setCurrentPage={handleSetCurrentPage} // Use the new handler
         language={language}
         setLanguage={setLanguage}
         t={t}
@@ -982,7 +1108,8 @@ function App() {
       <main className="flex-grow pt-16 md:pt-20">
         {renderPage()}
       </main>
-      <Footer language={language} t={t} globalSettings={globalSettings} setCurrentPage={setCurrentPage} />
+      <Footer language={language} t={t} globalSettings={globalSettings} setCurrentPage={handleSetCurrentPage} />
+      <ScrollToTopButton /> {/* Add the new button */}
     </div>
   );
 }
