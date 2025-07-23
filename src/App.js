@@ -621,7 +621,7 @@ const SectionRenderer = ({ section, language, t, sectionIndex }) => { // Added s
               src={section.image || "https://placehold.co/800x500/CCCCCC/333333?text=Image+Block"}
               alt={alt || "Image"}
               className="w-full h-auto object-contain rounded-lg mb-4 md:mb-0"
-              onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/800x500/CCCCCC/333333?text=Image+Block`; }}
+              onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/800x500/CCCCCC/333333?text=Image+${index + 1}`; }}
             />
             {caption && <p className="text-gray-300 text-sm mt-2 text-center">{caption}</p>}
           </div>
@@ -797,7 +797,7 @@ const ScrollToTopButton = () => {
 const PageContent = ({
   currentPage, loading, error, dynamicPages, portfolioProjects,
   globalSettings, specializations, legalInfo, language, t,
-  handleSetCurrentPage, setCurrentFilter, setSelectedProjectSlug
+  handleSetCurrentPage, setCurrentFilter, setSelectedProjectSlug, // Ensure these are destructured
 }) => {
   if (loading) {
     return (
@@ -1125,7 +1125,7 @@ function App() {
           language={language}
           t={t}
           handleSetCurrentPage={handleSetCurrentPage}
-          setCurrentFilter={setCurrentFilter}
+          setCurrentFilter={setCurrentFilter} // Pass setCurrentFilter as a prop
           setSelectedProjectSlug={setSelectedProjectSlug}
         />
       </main>
