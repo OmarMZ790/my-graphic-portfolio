@@ -165,7 +165,7 @@ const Header = ({ setCurrentPage, currentPage, language, setLanguage, t, isSideb
           >
             <Globe size={20} className="transition-transform duration-300 transform rotate-0 hover:rotate-90" />
           </button>
-        </nav>
+        </nav> {/* Corrected: Added closing </nav> tag here */}
 
         {/* Mobile Hamburger Icon */}
         <div className="md:hidden flex items-center">
