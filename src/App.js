@@ -586,7 +586,7 @@ const Contact = ({ language, t, globalSettings }) => {
 };
 
 // Section Renderer for Dynamic Pages
-const SectionRenderer = ({ section, language, t }) => {
+const SectionRenderer = ({ section, language, t, sectionIndex }) => { // Added sectionIndex prop
   const heading = language === 'ar' ? section.heading_ar : section.heading_en;
   const content = language === 'ar' ? section.content_ar : section.content_en;
   const alt = language === 'ar' ? section.alt_ar : section.alt_en;
@@ -595,14 +595,14 @@ const SectionRenderer = ({ section, language, t }) => {
   switch (section.type) {
     case 'text_block':
       return (
-        <div className="bg-gray-700 p-8 rounded-lg shadow-xl mb-8 prose prose-invert max-w-none mx-auto">
+        <div key={`text-block-${sectionIndex}`} className="bg-gray-700 p-8 rounded-lg shadow-xl mb-8 prose prose-invert max-w-none mx-auto">
           {heading && <h2 className="text-3xl font-bold mb-4">{heading}</h2>}
           <div dangerouslySetInnerHTML={{ __html: content }} />
         </div>
       );
     case 'image_block':
       return (
-        <div className="bg-gray-700 p-8 rounded-lg shadow-xl mb-8 text-center">
+        <div key={`image-block-${sectionIndex}`} className="bg-gray-700 p-8 rounded-lg shadow-xl mb-8 text-center">
           <img
             src={section.image || "https://placehold.co/800x500/CCCCCC/333333?text=Image+Block"}
             alt={alt || "Image"}
@@ -615,13 +615,13 @@ const SectionRenderer = ({ section, language, t }) => {
     case 'text_image_block':
       const imageOrderClass = section.image_position === 'left' ? 'md:flex-row-reverse' : 'md:flex-row';
       return (
-        <div className={`bg-gray-700 p-8 rounded-lg shadow-xl mb-8 flex flex-col md:flex-row items-center gap-8 ${imageOrderClass}`}>
+        <div key={`text-image-block-${sectionIndex}`} className={`bg-gray-700 p-8 rounded-lg shadow-xl mb-8 flex flex-col md:flex-row items-center gap-8 ${imageOrderClass}`}>
           <div className="md:w-1/2 w-full">
             <img
               src={section.image || "https://placehold.co/800x500/CCCCCC/333333?text=Image+Block"}
               alt={alt || "Image"}
               className="w-full h-auto object-contain rounded-lg mb-4 md:mb-0"
-              onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/600x400/CCCCCC/333333?text=Image+${index + 1}`; }}
+              onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/800x500/CCCCCC/333333?text=Image+Block`; }}
             />
             {caption && <p className="text-gray-300 text-sm mt-2 text-center">{caption}</p>}
           </div>
@@ -682,7 +682,7 @@ const DynamicPage = ({ pageData, language, t }) => {
           {pageTitle}
         </h1>
         {pageData.sections.map((section, index) => (
-          <SectionRenderer key={index} section={section} language={language} t={t} />
+          <SectionRenderer key={index} section={section} language={language} t={t} sectionIndex={index} />
         ))}
       </div>
     </section>
