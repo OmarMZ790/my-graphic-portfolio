@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as LucideIcons from 'lucide-react'; // Import all Lucide icons needed for dynamic use
-import { Globe, Mail, Phone, Eye, MessageSquare, Menu, X as CloseIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Globe, Mail, Phone, Eye, MessageSquare, Menu, X as CloseIcon, ChevronLeft, ChevronRight, LayoutList, Image, Text, TextSelect } from 'lucide-react'; // Added icons for dynamic pages
 
 // Translations object (will be merged with CMS data)
 const translations = {
@@ -39,6 +39,8 @@ const translations = {
     contactUsButton: 'اتصل بنا', // New translation for footer button
     prev: 'السابق', // Pagination
     next: 'التالي', // Pagination
+    pageNotFound: 'الصفحة غير موجودة', // New
+    pageNotFoundDesc: 'عذراً، لا يمكن العثور على هذه الصفحة.', // New
   },
   en: {
     home: 'Home',
@@ -75,6 +77,8 @@ const translations = {
     contactUsButton: 'Contact Us', // New translation for footer button
     prev: 'Prev', // Pagination
     next: 'Next', // Pagination
+    pageNotFound: 'Page not found', // New
+    pageNotFoundDesc: 'Sorry, this page could not be found.', // New
   },
 };
 
@@ -91,7 +95,7 @@ const getLucideIcon = (iconName) => {
 };
 
 // Header Component
-const Header = ({ setCurrentPage, currentPage, language, setLanguage, t, isSidebarOpen, setIsSidebarOpen, globalSettings }) => {
+const Header = ({ setCurrentPage, currentPage, language, setLanguage, t, isSidebarOpen, setIsSidebarOpen, globalSettings, dynamicPages }) => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -120,7 +124,7 @@ const Header = ({ setCurrentPage, currentPage, language, setLanguage, t, isSideb
     }
   };
 
-  const designerName = language === 'ar' ? globalSettings.designer_name_ar : globalSettings.designer_name_en;
+  const designerName = language === 'ar' ? globalSettings.designer_name_ar : globalSettings.designer_en;
 
   return (
     <header className={`fixed top-0 w-full z-50 shadow-lg transition-all duration-300 bg-gray-800 text-white
@@ -139,6 +143,12 @@ const Header = ({ setCurrentPage, currentPage, language, setLanguage, t, isSideb
           <button onClick={() => setCurrentPage('portfolio')} className={getButtonClasses('portfolio')}>
             {t.portfolio}
           </button>
+          {/* Dynamic Pages in Navigation */}
+          {Object.values(dynamicPages).map(page => (
+            <button key={page.slug} onClick={() => setCurrentPage(page.slug)} className={getButtonClasses(page.slug)}>
+              {language === 'ar' ? page.title_ar : page.title_en}
+            </button>
+          ))}
           <button onClick={() => setCurrentPage('contact')} className={getButtonClasses('contact')}>
             {t.contact}
           </button>
@@ -172,7 +182,7 @@ const Header = ({ setCurrentPage, currentPage, language, setLanguage, t, isSideb
 };
 
 // Sidebar Component for Mobile
-const Sidebar = ({ isOpen, setIsOpen, setCurrentPage, language, setLanguage, t, globalSettings }) => {
+const Sidebar = ({ isOpen, setIsOpen, setCurrentPage, language, setLanguage, t, globalSettings, dynamicPages }) => {
   const handleNavigationClick = (page) => {
     setCurrentPage(page);
     setIsOpen(false); // Close sidebar after navigation
@@ -221,6 +231,12 @@ const Sidebar = ({ isOpen, setIsOpen, setCurrentPage, language, setLanguage, t, 
           >
             {t.portfolio}
           </button>
+          {/* Dynamic Pages in Sidebar Navigation */}
+          {Object.values(dynamicPages).map(page => (
+            <button key={page.slug} onClick={() => handleNavigationClick(page.slug)} className="block text-lg text-gray-300 hover:text-blue-400 px-4 py-2 rounded-md transition-colors duration-200 text-right">
+              {language === 'ar' ? page.title_ar : page.title_en}
+            </button>
+          ))}
           <button
             onClick={() => handleNavigationClick('contact')}
             className="block text-lg text-gray-300 hover:text-blue-400 px-4 py-2 rounded-md transition-colors duration-200 text-right"
@@ -261,8 +277,8 @@ const Hero = ({ language, setCurrentPage, setCurrentFilter, t, globalSettings, s
   const currentHeroDescription = language === 'ar' ? globalSettings.hero_description_ar : globalSettings.hero_description_en;
 
   return (
-    <section className="py-20 text-center">
-      <div className="container mx-auto px-4 md:px-6">
+    <section className="py-20 text-center flex-grow flex flex-col justify-center items-center">
+      <div className="container mx-auto px-4 md:px-6 w-full">
         <div className="flex flex-col items-center justify-center">
           <img
             src={globalSettings.profile_image || "https://placehold.co/150x150/6B46C1/FFFFFF?text=Profile"}
@@ -340,7 +356,7 @@ const Portfolio = ({ language, currentFilter, setCurrentFilter, t, portfolioProj
   };
 
   return (
-    <section className="py-16">
+    <section className="py-16 flex-grow flex flex-col justify-between">
       <div className="container mx-auto px-4 md:px-6">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-6">
           {t.portfolioIntro}
@@ -445,8 +461,8 @@ const Portfolio = ({ language, currentFilter, setCurrentFilter, t, portfolioProj
 const ProjectDetail = ({ project, language, t }) => {
   if (!project) {
     return (
-      <section className="py-16 text-center">
-        <div className="container mx-auto px-4 md:px-6">
+      <section className="py-16 text-center flex-grow flex flex-col justify-center items-center">
+        <div className="container mx-auto px-4 md:px-6 w-full">
           <h2 className="text-3xl font-bold mb-4">{t.projectNotFound}</h2>
           <p className="text-lg text-gray-400">{t.projectNotFoundDesc}</p>
         </div>
@@ -460,7 +476,7 @@ const ProjectDetail = ({ project, language, t }) => {
   const additionalImages = project.additional_images || [];
 
   return (
-    <section className="py-16">
+    <section className="py-16 flex-grow flex flex-col justify-between">
       <div className="container mx-auto px-4 md:px-6">
         <h2 className="text-4xl md:text-5xl font-bold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">
           {title}
@@ -517,8 +533,8 @@ const Contact = ({ language, t, globalSettings }) => {
   const socialLinks = globalSettings.social_links || [];
 
   return (
-    <section className="py-16 bg-gradient-to-br from-gray-800 to-gray-900 transition-colors duration-300">
-      <div className="container mx-auto px-4 md:px-6">
+    <section className="py-16 bg-gradient-to-br from-gray-800 to-gray-900 transition-colors duration-300 flex-grow flex flex-col justify-center items-center">
+      <div className="container mx-auto px-4 md:px-6 w-full">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-6 text-white">
           {t.contactTitle}
         </h2>
@@ -529,13 +545,13 @@ const Contact = ({ language, t, globalSettings }) => {
         <div className="flex justify-center">
           <div className="bg-gray-700 p-8 rounded-lg shadow-xl w-full max-w-lg text-center">
             <div className="space-y-4 mb-8">
-              <div className="flex items-center justify-center space-x-3 rtl:space-x-reverse">
+              <div className="flex items-center justify-center gap-3">
                 <Mail size={20} className="text-blue-400" />
                 <a href={`mailto:${globalSettings.contact_email || 'your.email@example.com'}`} className="text-blue-400 hover:underline" dir="ltr">
                   {globalSettings.contact_email || 'your.email@example.com'}
                 </a>
               </div>
-              <div className="flex items-center justify-center space-x-3 rtl:space-x-reverse">
+              <div className="flex items-center justify-center gap-3">
                 <Phone size={20} className="text-blue-400" />
                 <a href={`tel:${globalSettings.contact_phone || '+1234567890'}`} className="text-blue-400 hover:underline" dir="ltr">
                   {globalSettings.contact_phone || '+123 456 7890'}
@@ -544,8 +560,7 @@ const Contact = ({ language, t, globalSettings }) => {
             </div>
 
             <h3 className="text-2xl font-semibold mb-6 text-white">{t.socialMedia}</h3>
-            {/* Added rtl:space-x-reverse for correct spacing in RTL */}
-            <div className="flex justify-center space-x-4 rtl:space-x-reverse">
+            <div className="flex justify-center gap-4">
               {socialLinks.map((link, index) => {
                 const IconComponent = getLucideIcon(link.icon);
                 return IconComponent ? (
@@ -569,13 +584,122 @@ const Contact = ({ language, t, globalSettings }) => {
   );
 };
 
+// Section Renderer for Dynamic Pages
+const SectionRenderer = ({ section, language, t }) => {
+  const heading = language === 'ar' ? section.heading_ar : section.heading_en;
+  const content = language === 'ar' ? section.content_ar : section.content_en;
+  const alt = language === 'ar' ? section.alt_ar : section.alt_en;
+  const caption = language === 'ar' ? section.caption_ar : section.caption_en;
+
+  switch (section.type) {
+    case 'text_block':
+      return (
+        <div className="bg-gray-700 p-8 rounded-lg shadow-xl mb-8 prose prose-invert max-w-none mx-auto">
+          {heading && <h2 className="text-3xl font-bold mb-4">{heading}</h2>}
+          <div dangerouslySetInnerHTML={{ __html: content }} />
+        </div>
+      );
+    case 'image_block':
+      return (
+        <div className="bg-gray-700 p-8 rounded-lg shadow-xl mb-8 text-center">
+          <img
+            src={section.image || "https://placehold.co/800x500/CCCCCC/333333?text=Image+Block"}
+            alt={alt || "Image"}
+            className="w-full h-auto object-contain rounded-lg mb-4 mx-auto"
+            onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/800x500/CCCCCC/333333?text=Image+Block"; }}
+          />
+          {caption && <p className="text-gray-300 text-sm">{caption}</p>}
+        </div>
+      );
+    case 'text_image_block':
+      const imageOrderClass = section.image_position === 'left' ? 'md:flex-row-reverse' : 'md:flex-row';
+      return (
+        <div className={`bg-gray-700 p-8 rounded-lg shadow-xl mb-8 flex flex-col md:flex-row items-center gap-8 ${imageOrderClass}`}>
+          <div className="md:w-1/2 w-full">
+            <img
+              src={section.image || "https://placehold.co/800x500/CCCCCC/333333?text=Image+Block"}
+              alt={alt || "Image"}
+              className="w-full h-auto object-contain rounded-lg mb-4 md:mb-0"
+              onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/800x500/CCCCCC/333333?text=Image+Block"; }}
+            />
+            {caption && <p className="text-gray-300 text-sm mt-2 text-center">{caption}</p>}
+          </div>
+          <div className="md:w-1/2 w-full prose prose-invert">
+            {heading && <h2 className="text-3xl font-bold mb-4">{heading}</h2>}
+            <div dangerouslySetInnerHTML={{ __html: content }} />
+          </div>
+        </div>
+      );
+    default:
+      return null;
+  }
+};
+
+// Dynamic Page Component
+const DynamicPage = ({ pageData, language, t }) => {
+  if (!pageData || !pageData.sections) {
+    return (
+      <section className="py-16 text-center flex-grow flex flex-col justify-center items-center">
+        <div className="container mx-auto px-4 md:px-6 w-full">
+          <h2 className="text-3xl font-bold mb-4">{t.pageNotFound}</h2>
+          <p className="text-lg text-gray-400">{t.pageNotFoundDesc}</p>
+        </div>
+      </section>
+    );
+  }
+
+  const pageTitle = language === 'ar' ? pageData.title_ar : pageData.title_en;
+  const metaDescription = language === 'ar' ? pageData.meta_description_ar : pageData.meta_description_en;
+
+  // Update document title and meta description for dynamic pages
+  useEffect(() => {
+    if (pageTitle) {
+      document.title = pageTitle;
+    }
+    if (metaDescription) {
+      let metaDescTag = document.querySelector('meta[name="description"]');
+      if (!metaDescTag) {
+        metaDescTag = document.createElement('meta');
+        metaDescTag.setAttribute('name', 'description');
+        document.head.appendChild(metaDescTag);
+      }
+      metaDescTag.setAttribute('content', metaDescription);
+    }
+    // Restore default meta description if navigating away from a dynamic page
+    return () => {
+      if (metaDescription) {
+        const defaultMetaDescription = language === 'ar' ? translations.ar.metaDescription : translations.en.metaDescription;
+        let metaDescTag = document.querySelector('meta[name="description"]');
+        if (metaDescTag) {
+          metaDescTag.setAttribute('content', defaultMetaDescription);
+        }
+      }
+    };
+  }, [pageData, language, pageTitle, metaDescription]);
+
+
+  return (
+    <section className="py-16 flex-grow flex flex-col justify-between">
+      <div className="container mx-auto px-4 md:px-6">
+        <h1 className="text-4xl md:text-5xl font-bold text-center mb-10 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">
+          {pageTitle}
+        </h1>
+        {pageData.sections.map((section, index) => (
+          <SectionRenderer key={index} section={section} language={language} t={t} />
+        ))}
+      </div>
+    </section>
+  );
+};
+
+
 // Legal Information Component
 const Legal = ({ language, t, legalInfo }) => {
   const legalTitle = language === 'ar' ? legalInfo.title_ar : legalInfo.title_en;
   const legalContentHtml = language === 'ar' ? legalInfo.content_ar : legalInfo.content_en;
 
   return (
-    <section className="py-16">
+    <section className="py-16 flex-grow flex flex-col justify-between">
       <div className="container mx-auto px-4 md:px-6">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">
           {legalTitle || t.legalTitle}
@@ -595,13 +719,15 @@ const Footer = ({ language, t, globalSettings, setCurrentPage }) => {
   return (
     <footer className="py-8 text-center text-sm opacity-80 mt-12 bg-gray-800 text-gray-300">
       <div className="container mx-auto px-4 md:px-6 flex flex-col items-center justify-center">
-        <p className="mb-4">&copy; {new Date().getFullYear()} {designerName || t.name}. {t.copyright}</p>
+        {/* Contact Us Button - now above copyright */}
         <button
           onClick={() => setCurrentPage('contact')}
-          className="bg-blue-600 text-white text-base py-2 px-6 rounded-full font-semibold hover:bg-blue-700 transition-colors duration-300 shadow-lg flex items-center gap-2"
+          className="bg-blue-600 text-white text-base py-2 px-6 rounded-full font-semibold hover:bg-blue-700 transition-colors duration-300 shadow-lg flex items-center gap-2 mb-4" {/* Added mb-4 for spacing */}
         >
           <MessageSquare size={20} /> {t.contactUsButton}
         </button>
+        {/* Copyright - now last */}
+        <p>&copy; {new Date().getFullYear()} {designerName || t.name}. {t.copyright}</p>
       </div>
     </footer>
   );
@@ -632,6 +758,7 @@ function App() {
   const [portfolioProjects, setPortfolioProjects] = useState([]);
   const [specializations, setSpecializations] = useState([]); // New state for specializations
   const [legalInfo, setLegalInfo] = useState({});
+  const [dynamicPages, setDynamicPages] = useState({}); // New state for dynamic pages
   const [selectedProjectSlug, setSelectedProjectSlug] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -656,24 +783,33 @@ function App() {
     localStorage.setItem('currentPage', currentPage);
   }, [currentPage]);
 
-  // Update document title and meta description dynamically
+  // Update document title and meta description dynamically for static pages (home, portfolio, contact, legal)
   useEffect(() => {
-    const pageTitle = language === 'ar' ? globalSettings.page_title_ar : globalSettings.page_title_en;
-    const metaDescription = language === 'ar' ? globalSettings.meta_description_ar : globalSettings.meta_description_en;
+    const defaultPageTitle = language === 'ar' ? translations.ar.page_title_ar : translations.en.page_title_en;
+    const defaultMetaDescription = language === 'ar' ? translations.ar.meta_description_ar : translations.en.meta_description_en;
     const favicon = globalSettings.favicon;
 
-    if (pageTitle) {
-      document.title = pageTitle;
+    let titleToSet = defaultPageTitle;
+    let metaDescToSet = defaultMetaDescription;
+
+    // Override with global settings if available and on a static page
+    if (globalSettings.page_title_ar && (currentPage === 'home' || currentPage === 'portfolio' || currentPage === 'contact' || currentPage === 'legal')) {
+      titleToSet = language === 'ar' ? globalSettings.page_title_ar : globalSettings.page_title_en;
     }
-    if (metaDescription) {
-      let metaDescTag = document.querySelector('meta[name="description"]');
-      if (!metaDescTag) {
-        metaDescTag = document.createElement('meta');
-        metaDescTag.setAttribute('name', 'description');
-        document.head.appendChild(metaDescTag);
-      }
-      metaDescTag.setAttribute('content', metaDescription);
+    if (globalSettings.meta_description_ar && (currentPage === 'home' || currentPage === 'portfolio' || currentPage === 'contact' || currentPage === 'legal')) {
+      metaDescToSet = language === 'ar' ? globalSettings.meta_description_ar : globalSettings.meta_description_en;
     }
+
+    document.title = titleToSet;
+
+    let metaDescTag = document.querySelector('meta[name="description"]');
+    if (!metaDescTag) {
+      metaDescTag = document.createElement('meta');
+      metaDescTag.setAttribute('name', 'description');
+      document.head.appendChild(metaDescTag);
+    }
+    metaDescTag.setAttribute('content', metaDescToSet);
+
     if (favicon) {
       let link = document.querySelector("link[rel~='icon']");
       if (!link) {
@@ -683,7 +819,7 @@ function App() {
       }
       link.href = favicon;
     }
-  }, [globalSettings, language]);
+  }, [globalSettings, language, currentPage]);
 
 
   // Fetch data from CMS-generated JSON files
@@ -742,6 +878,100 @@ function App() {
           setPortfolioProjects(projectsWithSlugs);
         }
 
+        // Fetch dynamic pages
+        // Get list of page files from public/data/pages/ (requires a server-side endpoint or knowing slugs)
+        // For simplicity, we'll assume we know the slugs or fetch a list of slugs.
+        // Decap CMS 'folder' collections store each entry as a separate file.
+        // We'll need to list the files in the 'public/data/pages/' directory.
+        // This is tricky for a client-side React app without a backend.
+
+        // A better approach for dynamic pages with Decap CMS folder collection:
+        // Decap CMS generates a `collection.json` file for folder collections
+        // if configured with `summary: '{{slug}}'` and `format: 'json'` or `yaml`.
+        // However, the standard way is to fetch each file by its slug.
+        // For now, let's assume we fetch a list of page slugs first, then fetch each page.
+        // Or, even simpler, list the pages in config.yml as a 'file' collection.
+
+        // Let's adjust App.js to fetch all files from 'public/data/pages/'
+        // This requires a bit of a workaround for client-side fetch.
+        // The most robust way is to have a list of page slugs from CMS itself.
+        // Given the config.yml uses `folder`, Decap CMS creates individual JSON files.
+        // We need to fetch a list of these files. This is not directly possible from client-side.
+
+        // Re-thinking dynamic pages:
+        // To make dynamic pages truly discoverable and manageable from CMS
+        // and fetchable from client-side, we need a "master list" of pages.
+        // The current `config.yml` for `dynamic_pages` uses `folder`. This means
+        // each page (e.g., `about-us.json`, `my-services.json`) is a separate file.
+        // To get a list of all pages, the React app would need to know their slugs in advance,
+        // or there would need to be a separate CMS collection that lists all dynamic pages.
+        // The simplest client-side way is if Decap CMS *also* generated a single JSON file
+        // containing a list of all entries in a folder collection. This is not standard.
+
+        // Alternative: Use a "list" widget within a single file for dynamic pages.
+        // This would be similar to `specializations_list` or `portfolio_projects`.
+        // Let's modify `config.yml` to reflect this for `dynamic_pages`.
+        // This makes fetching much easier.
+
+        // ***Correction: The current config.yml for `dynamic_pages` uses `folder`.
+        // This implies each page is a separate file. To list them, the app needs to know slugs.
+        // The most common way to handle this in a static site is to have a "pages_list.json"
+        // that CMS also manages, which simply lists the slugs of active pages.
+        // Or, we can change `dynamic_pages` to be a `file` collection with a `list` of pages.
+        // Let's go with the `file` collection with a `list` of pages for simplicity in React.
+        // This means `config.yml` needs another small adjustment.
+
+        // For now, I will assume dynamic pages are fetched based on a known slug if navigated directly.
+        // To list them in navigation, we need a way to get all slugs.
+        // I will add a placeholder for `dynamicPages` fetch, and adjust `config.yml` in the next step
+        // if the user confirms this approach.
+
+        // For the current `App.js`, I will fetch a specific example dynamic page if a slug is known.
+        // But for navigation, we need a list.
+        // Let's make `dynamicPages` an object where keys are slugs and values are page data.
+
+        // Fetch all dynamic pages by iterating over known slugs.
+        // This is a limitation without a backend or a "pages_list.json" generated by CMS.
+        // For now, I will fetch them by listing files in the `data/pages` directory.
+        // This is a common pattern for static sites where you might have a pre-generated list
+        // of content files. Since Decap CMS creates these files, we need to know their names.
+
+        // Let's adjust `App.js` to try to fetch all files in `public/data/pages/`
+        // This is not directly possible via client-side fetch.
+        // The `folder` collection in Decap CMS does not automatically generate an index.json.
+        // To make `dynamicPages` work for navigation, we need to either:
+        // 1. Change `dynamic_pages` collection type in `config.yml` to `files` and have a single file with a list of pages. (Recommended for simplicity)
+        // 2. Or, manually add slugs to `dynamicPages` state for navigation and fetch on demand.
+        // 3. Or, have a separate collection just for navigation links.
+
+        // Given the current `config.yml` for `dynamic_pages` is `folder`, I need to change it
+        // to `files` with a list of pages for easier fetching in App.js.
+        // I will make this change in the `config.yml` provided in this response,
+        // and update `App.js` accordingly.
+
+        // ***REVISED STRATEGY FOR DYNAMIC PAGES IN `config.yml` AND `App.js`***
+        // `config.yml`: Change `dynamic_pages` from `folder` to `files` collection,
+        // with a single file (e.g., `public/data/dynamic_pages_list.json`) containing a `list` of pages.
+        // Each item in the list will be a page with its sections.
+        // This makes fetching all pages for navigation straightforward.
+
+        // Re-fetching global settings and legal info for App.js
+        // The previous fetch logic for global and legal info was correct.
+        // Now, for dynamic pages:
+        const dynamicPagesResponse = await fetch('/data/dynamic_pages_list.json');
+        if (!dynamicPagesResponse.ok) {
+          console.warn("dynamic_pages_list.json not found, using empty dynamic pages. Please publish from CMS.");
+          setDynamicPages({});
+        } else {
+          const dynamicPagesData = await dynamicPagesResponse.json();
+          // Transform the array of pages into an object keyed by slug for easy lookup
+          const pagesMap = (dynamicPagesData.pages || []).reduce((acc, page) => {
+            acc[page.slug] = page;
+            return acc;
+          }, {});
+          setDynamicPages(pagesMap);
+        }
+
       } catch (e) {
         console.error("Failed to fetch CMS data:", e);
         setError("Failed to load content. Please try again later.");
@@ -777,6 +1007,11 @@ function App() {
       );
     }
 
+    // Check if currentPage matches a dynamic page slug
+    if (dynamicPages[currentPage]) {
+      return <DynamicPage pageData={dynamicPages[currentPage]} language={language} t={t} />;
+    }
+
     switch (currentPage) {
       case 'home':
         return <Hero language={language} setCurrentPage={setCurrentPage} setCurrentFilter={setCurrentFilter} t={t} globalSettings={globalSettings} specializations={specializations} />;
@@ -790,7 +1025,15 @@ function App() {
       case 'legal':
         return <Legal language={language} t={t} legalInfo={legalInfo} />;
       default:
-        return <Hero language={language} setCurrentPage={setCurrentPage} setCurrentFilter={setCurrentFilter} t={t} globalSettings={globalSettings} specializations={specializations} />;
+        // Fallback for unknown pages (e.g., if a dynamic page slug is invalid)
+        return (
+          <section className="py-16 text-center flex-grow flex flex-col justify-center items-center">
+            <div className="container mx-auto px-4 md:px-6 w-full">
+              <h2 className="text-3xl font-bold mb-4">{t.pageNotFound}</h2>
+              <p className="text-lg text-gray-400">{t.pageNotFoundDesc}</p>
+            </div>
+          </section>
+        );
     }
   };
 
@@ -805,6 +1048,7 @@ function App() {
         setIsSidebarOpen={setIsSidebarOpen}
         t={t}
         globalSettings={globalSettings}
+        dynamicPages={dynamicPages}
       />
       <Sidebar
         isOpen={isSidebarOpen}
@@ -814,6 +1058,7 @@ function App() {
         setLanguage={setLanguage}
         t={t}
         globalSettings={globalSettings}
+        dynamicPages={dynamicPages}
       />
       <main className="flex-grow pt-16 md:pt-20">
         {renderPage()}

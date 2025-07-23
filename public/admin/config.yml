@@ -225,3 +225,120 @@ collections:
                 widget: "markdown"
                 required: false
             collapsed: true
+
+  - name: "dynamic_pages" # مجموعة جديدة لإدارة الصفحات الديناميكية
+    label: "الصفحات الديناميكية"
+    folder: "public/data/pages" # مجلد حفظ ملفات كل صفحة
+    create: true # السماح بإنشاء صفحات جديدة
+    slug: "{{slug}}" # اسم الملف سيكون بناءً على الـ slug
+    fields:
+      - label: "عنوان الصفحة (عربي)"
+        name: "title_ar"
+        widget: "string"
+        required: true
+      - label: "عنوان الصفحة (إنجليزي)"
+        name: "title_en"
+        widget: "string"
+        required: true
+      - label: "معرف الصفحة (URL Slug)"
+        name: "slug"
+        widget: "string"
+        required: true
+        hint: "المعرف الفريد للصفحة في الرابط (مثال: about-us, our-services). يجب أن يكون حروفاً صغيرة وبدون مسافات، استخدم الواصلات."
+        pattern: ['^[a-z0-9-]+$', 'يجب أن يكون حروفاً صغيرة وأرقاماً وواصلات فقط (بدون مسافات أو رموز خاصة).']
+      - label: "وصف الميتا (Meta Description - عربي)"
+        name: "meta_description_ar"
+        widget: "text"
+        required: false
+        hint: "وصف قصير يظهر في نتائج البحث."
+      - label: "وصف الميتا (Meta Description - إنجليزي)"
+        name: "meta_description_en"
+        widget: "text"
+        required: false
+        hint: "Short description for search engine results."
+      - label: "أقسام الصفحة"
+        name: "sections"
+        widget: "list"
+        types: # تعريف أنواع الأقسام المختلفة
+          - label: "قسم نصي (Text Block)"
+            name: "text_block"
+            widget: "object"
+            fields:
+              - label: "عنوان القسم (عربي)"
+                name: "heading_ar"
+                widget: "string"
+                required: false
+              - label: "عنوان القسم (إنجليزي)"
+                name: "heading_en"
+                widget: "string"
+                required: false
+              - label: "محتوى القسم (عربي)"
+                name: "content_ar"
+                widget: "markdown"
+                required: true
+              - label: "محتوى القسم (إنجليزي)"
+                name: "content_en"
+                widget: "markdown"
+                required: true
+          - label: "قسم صورة (Image Block)"
+            name: "image_block"
+            widget: "object"
+            fields:
+              - label: "صورة"
+                name: "image"
+                widget: "image"
+                required: true
+              - label: "نص بديل للصورة (عربي)"
+                name: "alt_ar"
+                widget: "string"
+                required: false
+              - label: "نص بديل للصورة (إنجليزي)"
+                name: "alt_en"
+                widget: "string"
+                required: false
+              - label: "وصف الصورة (عربي)"
+                name: "caption_ar"
+                widget: "string"
+                required: false
+              - label: "وصف الصورة (إنجليزي)"
+                name: "caption_en"
+                widget: "string"
+                required: false
+          - label: "قسم نص وصورة (Text & Image Block)"
+            name: "text_image_block"
+            widget: "object"
+            fields:
+              - label: "عنوان القسم (عربي)"
+                name: "heading_ar"
+                widget: "string"
+                required: false
+              - label: "عنوان القسم (إنجليزي)"
+                name: "heading_en"
+                widget: "string"
+                required: false
+              - label: "محتوى القسم (عربي)"
+                name: "content_ar"
+                widget: "markdown"
+                required: true
+              - label: "محتوى القسم (إنجليزي)"
+                name: "content_en"
+                widget: "markdown"
+                required: true
+              - label: "صورة"
+                name: "image"
+                widget: "image"
+                required: true
+              - label: "نص بديل للصورة (عربي)"
+                name: "alt_ar"
+                widget: "string"
+                required: false
+              - label: "نص بديل للصورة (إنجليزي)"
+                name: "alt_en"
+                widget: "string"
+                required: false
+              - label: "ترتيب الصورة"
+                name: "image_position"
+                widget: "select"
+                options: ["left", "right"]
+                default: "right"
+                hint: "هل تظهر الصورة على اليسار أم اليمين بجانب النص؟"
