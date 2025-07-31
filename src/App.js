@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import * as LucideIcons from 'lucide-react'; // Import all Lucide icons needed for dynamic use
-import { Globe, Mail, Phone, Eye, MessageSquare, Menu, X as CloseIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Globe, Mail, Phone, Eye, MessageSquare, Menu, X as CloseIcon, ChevronLeft, ChevronRight, PenTool, Palette, Lightbulb, Facebook, Linkedin } from 'lucide-react';
 
-// Translations object (will be merged with CMS data)
+// --- Static Data (Embedded from your JSON files) ---
+// This approach embeds your data directly into the React app,
+// simplifying deployment by removing external fetch calls for JSON files.
+
 const translations = {
   ar: {
     home: 'الرئيسية',
@@ -78,19 +80,129 @@ const translations = {
   },
 };
 
-// Helper function to get Lucide icon component by name
+const globalSettingsData = {
+  "page_title_en": "Your Portfolio Title (English)",
+  "tagline_ar": "أحول الأفكار إلى تصاميم بصرية مذهلة.",
+  "profile_image": "/images/drawing-122.svg", // Ensure this path is correct in your public/images folder
+  "meta_description_en": "Professional graphic designer specializing in logo design, branding, print design, and advertising. Transforming ideas into innovative visual designs.",
+  "social_links": [
+    {
+      "platform_name": "Facebook",
+      "url": "https://facebook.com/yourprofile", // Update your Facebook URL
+      "icon": "Facebook" // Ensure this matches Lucide icon name
+    },
+    {
+      "platform_name": "LinkedIn",
+      "url": "https://linkedin.com/yourprofile", // Update your LinkedIn URL
+      "icon": "Linkedin" // Ensure this matches Lucide icon name
+    }
+  ],
+  "page_title_ar": "معرض أعمال عمر محمد",
+  "designer_name_en": "Omar Mohammed",
+  "meta_description_ar": "مصمم جرافيك محترف متخصص في تصميم الشعارات، الهوية البصرية، تصميم المطبوعات، والإعلانات. أحول الأفكار إلى تصاميم بصرية مبتكرة.",
+  "contact_phone": "+201288151030", // Update your phone number
+  "designer_name_ar": "عمر محمد",
+  "hero_description_en": "As a passionate and creative graphic designer, I have extensive experience in transforming complex ideas into attractive and impactful visual solutions. I believe that good design is key to effective communication and building a strong visual identity for brands.",
+  "favicon": "/images/drawing-122.svg", // Ensure this path is correct in your public/images folder
+  "hero_description_ar": "بصفتي مصمم جرافيك شغوف ومبدع، أمتلك خبرة واسعة في تحويل الأفكار المعقدة إلى حلول بصرية جذابة ومؤثرة. أؤمن بأن التصميم الجيد هو مفتاح التواصل الفعال وبناء الهوية البصرية القوية للعلامات التجارية.",
+  "tagline_en": "Transforming ideas into stunning visual designs.",
+  "contact_email": "Omar.M.Z.Mail@gmail.com" // Update your email
+};
+
+const legalInfoData = {
+  "title_ar": "المعلومات القانونية والشروط",
+  "title_en": "Legal Information & Terms",
+  "content_ar": "<p>هذا النص هو مثال للمعلومات القانونية والشروط. يجب عليك استبداله بالمحتوى الفعلي الخاص بك.</p><p>جميع الحقوق محفوظة &copy; 2024. لا يجوز نسخ أو توزيع أي جزء من هذا الموقع بدون إذن كتابي.</p>",
+  "content_en": "<p>This is example legal information and terms. You should replace it with your actual content.</p><p>All rights reserved &copy; 2024. No part of this website may be reproduced or distributed without written permission.</p>"
+};
+
+const specializationsData = {
+  "specializations": [
+    {
+      "name_ar": "تصميم شعارات إحترافية",
+      "name_en": "Designing Professional Logos",
+      "icon": "PenTool", // Correct Lucide icon name (PascalCase)
+      "category_slug": "logos"
+    },
+    {
+      "name_ar": "تصميم هوية بصرية",
+      "name_en": "Brand Identity Design",
+      "icon": "Palette", // Correct Lucide icon name
+      "category_slug": "branding"
+    },
+    {
+      "name_ar": "تصميم إعلانات ومطبوعات",
+      "name_en": "Advertising & Print Design",
+      "icon": "Lightbulb", // Correct Lucide icon name
+      "category_slug": "advertising"
+    },
+    {
+      "name_ar": "تصميم واجهات المستخدم (UI)",
+      "name_en": "User Interface (UI) Design",
+      "icon": "Layout", // Example icon, you can change it
+      "category_slug": "ui-design"
+    }
+  ]
+};
+
+const portfolioProjectsData = {
+  "projects": [
+    {
+      "id": "project-1", // Added unique ID for better React keying
+      "title_ar": "مشروع تصميم شعار شركة 'القمة'",
+      "title_en": "Summit Company Logo Design Project",
+      "short_description_ar": "تصميم شعار عصري ومبتكر لشركة متخصصة في الحلول التقنية.",
+      "short_description_en": "Modern and innovative logo design for a technology solutions company.",
+      "main_image": "/images/6-4.jpg", // Ensure this path is correct in your public/images folder
+      "additional_images": [
+        { "image": "/images/6-4.jpg" }, // Example, ensure these paths are correct
+        { "image": "https://placehold.co/800x600/FF5733/FFFFFF?text=Additional+Image+2" }
+      ],
+      "category": "logos", // Must match a category_slug from specializations
+      "project_url": "https://example.com/project-summit", // Optional: link to live project
+      "body_ar": "<p>تفاصيل المشروع: قمنا بتصميم شعار يعكس الرؤية المستقبلية للشركة، مع التركيز على البساطة والاحترافية. تم استخدام ألوان زاهية لتعكس الابتكار.</p><p>الهدف من المشروع كان إنشاء هوية بصرية قوية تساعد الشركة على التميز في السوق التنافسي.</p>",
+      "body_en": "<p>Project Details: We designed a modern logo reflecting the company's futuristic vision, focusing on simplicity and professionalism. Vibrant colors were used to convey innovation.</p><p>The project's goal was to create a strong visual identity that helps the company stand out in a competitive market.</p>"
+    },
+    {
+      "id": "project-2",
+      "title_ar": "حملة إعلانية لمنتج جديد",
+      "title_en": "New Product Advertising Campaign",
+      "short_description_ar": "تصميم حملة إعلانية متكاملة تشمل ملصقات وإعلانات سوشيال ميديا لمنتج غذائي جديد.",
+      "short_description_en": "Designing a comprehensive advertising campaign including posters and social media ads for a new food product.",
+      "main_image": "https://placehold.co/600x400/3498DB/FFFFFF?text=Ad+Campaign",
+      "additional_images": [],
+      "category": "advertising",
+      "project_url": null,
+      "body_ar": "<p>تفاصيل الحملة: ركزنا على جذب الانتباه من خلال تصميمات جريئة ورسائل واضحة. تم توزيع الإعلانات عبر منصات متعددة لتحقيق أقصى وصول.</p>",
+      "body_en": "<p>Campaign Details: We focused on capturing attention with bold designs and clear messages. Ads were distributed across multiple platforms for maximum reach.</p>"
+    },
+    {
+      "id": "project-3",
+      "title_ar": "تصميم هوية بصرية لمقهى 'الركن الهادئ'",
+      "title_en": "Brand Identity for 'The Quiet Corner' Cafe",
+      "short_description_ar": "تطوير هوية بصرية متكاملة لمقهى جديد، تشمل الشعار، الألوان، الخطوط، وتصميم القوائم.",
+      "short_description_en": "Developing a complete brand identity for a new cafe, including logo, colors, fonts, and menu design.",
+      "main_image": "https://placehold.co/600x400/9B59B6/FFFFFF?text=Cafe+Branding",
+      "additional_images": [
+        { "image": "https://placehold.co/800x600/9B59B6/FFFFFF?text=Cafe+Mockup+1" },
+        { "image": "https://placehold.co/800x600/9B59B6/FFFFFF?text=Cafe+Mockup+2" }
+      ],
+      "category": "branding",
+      "project_url": null,
+      "body_ar": "<p>تفاصيل المشروع: تم تصميم هوية تعكس الأجواء الهادئة والمريحة للمقهى، مع التركيز على الألوان الترابية والخطوط الأنيقة.</p>",
+      "body_en": "<p>Project Details: The identity was designed to reflect the quiet and comfortable ambiance of the cafe, focusing on earthy tones and elegant typography.</p>"
+    }
+  ]
+};
+
+// --- Helper function to get Lucide icon component by name ---
 const getLucideIcon = (iconName) => {
-  // Convert kebab-case (e.g., "pen-tool") to PascalCase (e.g., "PenTool")
-  const pascalCaseName = iconName
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join('');
-  
-  const IconComponent = LucideIcons[pascalCaseName];
+  // Lucide icons are imported directly, so we can reference them by name
+  const IconComponent = LucideIcons[iconName];
   return IconComponent ? <IconComponent size={24} /> : null;
 };
 
-// Header Component
+// --- Header Component ---
 const Header = ({ setCurrentPage, currentPage, language, setLanguage, t, isSidebarOpen, setIsSidebarOpen, globalSettings }) => {
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -171,7 +283,7 @@ const Header = ({ setCurrentPage, currentPage, language, setLanguage, t, isSideb
   );
 };
 
-// Sidebar Component for Mobile
+// --- Sidebar Component for Mobile ---
 const Sidebar = ({ isOpen, setIsOpen, setCurrentPage, language, setLanguage, t, globalSettings }) => {
   const handleNavigationClick = (page) => {
     setCurrentPage(page);
@@ -250,7 +362,7 @@ const Sidebar = ({ isOpen, setIsOpen, setCurrentPage, language, setLanguage, t, 
   );
 };
 
-// Hero Section Component
+// --- Hero Section Component ---
 const Hero = ({ language, setCurrentPage, setCurrentFilter, t, globalSettings, specializations }) => {
   const handleSkillClick = (category) => {
     setCurrentPage('portfolio');
@@ -312,7 +424,7 @@ const Hero = ({ language, setCurrentPage, setCurrentFilter, t, globalSettings, s
   );
 };
 
-// Portfolio Section Component
+// --- Portfolio Section Component ---
 const Portfolio = ({ language, currentFilter, setCurrentFilter, t, portfolioProjects, setCurrentPage, setSelectedProjectSlug, specializations }) => {
   const [currentPageNum, setCurrentPageNum] = useState(1); // State for pagination current page
   const itemsPerPage = 10; // Number of projects per page
@@ -374,7 +486,7 @@ const Portfolio = ({ language, currentFilter, setCurrentFilter, t, portfolioProj
             <div
               key={item.id}
               className="group relative bg-gray-700 rounded-lg shadow-xl overflow-hidden transform hover:scale-105 transition-transform duration-300
-                         dark:shadow-none dark:border dark:border-gray-600"
+                            dark:shadow-none dark:border dark:border-gray-600"
             >
               <img
                 src={item.main_image || "https://placehold.co/600x400/CCCCCC/333333?text=Image+Error"}
@@ -441,7 +553,7 @@ const Portfolio = ({ language, currentFilter, setCurrentFilter, t, portfolioProj
   );
 };
 
-// Project Detail Page Component
+// --- Project Detail Page Component ---
 const ProjectDetail = ({ project, language, t }) => {
   if (!project) {
     return (
@@ -511,8 +623,7 @@ const ProjectDetail = ({ project, language, t }) => {
   );
 };
 
-
-// Contact Section Component
+// --- Contact Section Component ---
 const Contact = ({ language, t, globalSettings }) => {
   const socialLinks = globalSettings.social_links || [];
 
@@ -569,7 +680,7 @@ const Contact = ({ language, t, globalSettings }) => {
   );
 };
 
-// Legal Information Component
+// --- Legal Information Component ---
 const Legal = ({ language, t, legalInfo }) => {
   const legalTitle = language === 'ar' ? legalInfo.title_ar : legalInfo.title_en;
   const legalContentHtml = language === 'ar' ? legalInfo.content_ar : legalInfo.content_en;
@@ -589,7 +700,7 @@ const Legal = ({ language, t, legalInfo }) => {
   );
 };
 
-// Footer Component
+// --- Footer Component ---
 const Footer = ({ language, t, globalSettings, setCurrentPage }) => {
   const designerName = language === 'ar' ? globalSettings.designer_name_ar : globalSettings.designer_name_en;
   return (
@@ -607,7 +718,7 @@ const Footer = ({ language, t, globalSettings, setCurrentPage }) => {
   );
 };
 
-// Main App Component
+// --- Main App Component ---
 function App() {
   // Initialize state from localStorage or browser preferences
   const [currentPage, setCurrentPage] = useState(() => {
@@ -628,13 +739,24 @@ function App() {
   });
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [globalSettings, setGlobalSettings] = useState({});
-  const [portfolioProjects, setPortfolioProjects] = useState([]);
-  const [specializations, setSpecializations] = useState([]); // New state for specializations
-  const [legalInfo, setLegalInfo] = useState({});
+
+  // Directly use the embedded data
+  const globalSettings = globalSettingsData;
+  const portfolioProjects = portfolioProjectsData.projects.map(project => ({
+    ...project,
+    // Ensure slug is generated correctly based on the current language
+    slug: (language === 'ar' ? project.title_ar : project.title_en)
+      .toLowerCase()
+      .replace(/ /g, '-')
+      .replace(/[^\w-]+/g, ''),
+    id: project.id || Math.random().toString(36).substring(2, 9) // Ensure unique ID
+  }));
+  const specializations = specializationsData.specializations;
+  const legalInfo = legalInfoData;
+
   const [selectedProjectSlug, setSelectedProjectSlug] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false); // No longer loading from external files
+  const [error, setError] = useState(null); // No longer fetching, so no fetch errors
 
   // Force dark mode
   useEffect(() => {
@@ -685,74 +807,6 @@ function App() {
     }
   }, [globalSettings, language]);
 
-
-  // Fetch data from CMS-generated JSON files
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        // Fetch global settings
-        const globalResponse = await fetch('/data/global.json');
-        if (!globalResponse.ok) {
-          console.warn("global.json not found, using default settings. Please publish from CMS.");
-          setGlobalSettings({}); // Set to empty object to use defaults from translations
-        } else {
-          const globalData = await globalResponse.json();
-          setGlobalSettings(globalData);
-        }
-
-        // Fetch legal info
-        const legalResponse = await fetch('/data/legal.json');
-        if (!legalResponse.ok) {
-          console.warn("legal.json not found, using default legal info. Please publish from CMS.");
-          setLegalInfo({}); // Set to empty object to use defaults from translations
-        } else {
-          const legalData = await legalResponse.json();
-          setLegalInfo(legalData);
-        }
-
-        // Fetch specializations
-        const specializationsResponse = await fetch('/data/specializations.json');
-        if (!specializationsResponse.ok) {
-          console.warn("specializations.json not found, using empty specializations. Please publish from CMS.");
-          setSpecializations([]); // Set to empty array
-        } else {
-          const specializationsData = await specializationsResponse.json();
-          // Assuming specializations.json contains an object with a 'specializations' array
-          setSpecializations(specializationsData.specializations || []);
-        }
-
-        // Fetch portfolio projects
-        const portfolioResponse = await fetch('/data/portfolio.json');
-        if (!portfolioResponse.ok) {
-          console.warn("portfolio.json not found, using empty portfolio. Please publish from CMS.");
-          setPortfolioProjects([]); // Set to empty array
-        } else {
-          const portfolioData = await portfolioResponse.json();
-          // Add a slug to each project for routing and ensure unique ID
-          const projectsWithSlugs = (portfolioData.projects || []).map(project => ({
-            ...project,
-            slug: (language === 'ar' ? project.title_ar : project.title_en)
-              .toLowerCase()
-              .replace(/ /g, '-')
-              .replace(/[^\w-]+/g, ''), // Basic slug generation
-            id: project.id || Math.random().toString(36).substring(2, 9) // Ensure unique ID
-          }));
-          setPortfolioProjects(projectsWithSlugs);
-        }
-
-      } catch (e) {
-        console.error("Failed to fetch CMS data:", e);
-        setError("Failed to load content. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [language]); // Re-fetch if language changes (for slug generation based on title)
-
   // Scroll to top when currentPage or selectedProjectSlug changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -762,6 +816,7 @@ function App() {
 
   // Render content based on currentPage
   const renderPage = () => {
+    // Loading and error states are simplified as data is embedded
     if (loading) {
       return (
         <div className="flex justify-center items-center h-screen-minus-header">
@@ -824,3 +879,4 @@ function App() {
 }
 
 export default App;
+
