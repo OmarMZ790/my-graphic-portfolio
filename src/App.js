@@ -532,6 +532,82 @@ const Footer = ({ language, t, globalSettings, setCurrentPage }) => {
 
 // --- Main App Component ---
 function App() {
+  // --- Translations object (moved inside App for better scope recognition) ---
+  const translations = {
+    ar: {
+      home: 'الرئيسية',
+      portfolio: 'معرض الأعمال',
+      contact: 'اتصل بنا',
+      legal: 'معلومات قانونية',
+      aboutMe: 'من أنا',
+      greeting: 'مرحباً، أنا',
+      name: 'مصمم جرافيك', // Default, will be overridden by CMS
+      tagline: 'أحول الأفكار إلى تصاميم بصرية مذهلة.', // Default, will be overridden by CMS
+      heroDescription: 'بصفتي مصمم جرافيك شغوف ومبدع، أمتلك خبرة واسعة في تحويل الأفكار المعقدة إلى حلول بصرية جذابة ومؤثرة. أؤمن بأن التصميم الجيد هو مفتاح التواصل الفعال وبناء الهوية البصرية القوية للعلامات التجارية.', // Default, will be overridden by CMS
+      heroSkillsTitle: 'ماذا أقدم؟',
+      callToAction: 'تصفح معرض أعمالي',
+      portfolioIntro: 'استكشف أعمالي',
+      portfolioDescription: 'هنا يمكنك استعراض مجموعة من أعمالي في مختلف تخصصات التصميم الجرافيكي.',
+      all: 'الكل',
+      contactTitle: 'تواصل معي',
+      contactDescription: 'يسعدني تلقي استفساراتكم ومشاريعكم الجديدة. لا تترددوا في التواصل معي عبر الطرق التالية:',
+      email: 'البريد الإلكتروني',
+      phone: 'رقم الهاتف',
+      message: 'الرسالة',
+      sendMessage: 'إرسال الرسالة',
+      legalTitle: 'المعلومات القانونية والشروط', // Default, will be overridden by CMS
+      legalContent: ``, // Default, will be overridden by CMS
+      copyright: 'جميع الحقوق محفوظة.',
+      yourName: 'اسمك',
+      yourEmail: 'بريدك الإلكتروني',
+      socialMedia: 'صفحاتي على الإنترنت',
+      viewProject: 'عرض المشروع',
+      additionalImages: 'صور إضافية',
+      visitProject: 'زيارة المشروع',
+      projectNotFound: 'المشروع غير موجود',
+      projectNotFoundDesc: 'عذراً، لا يمكن العثور على تفاصيل هذا المشروع.',
+      contactUsButton: 'اتصل بنا', // New translation for footer button
+      prev: 'السابق', // Pagination
+      next: 'التالي', // Pagination
+    },
+    en: {
+      home: 'Home',
+      portfolio: 'Portfolio',
+      contact: 'Contact',
+      legal: 'Legal Info', // Default, will be overridden by CMS
+      aboutMe: 'About Me',
+      greeting: 'Hello, I\'m',
+      name: 'A Graphic Designer', // Default, will be overridden by CMS
+      tagline: 'Transforming ideas into stunning visual designs.', // Default, will be overridden by CMS
+      heroDescription: 'As a passionate and creative graphic designer, I have extensive experience in transforming complex ideas into attractive and impactful visual solutions. I believe that good design is key to effective communication and building a strong visual identity for brands.', // Default, will be overridden by CMS
+      heroSkillsTitle: 'What I Offer?',
+      callToAction: 'Browse My Portfolio',
+      portfolioIntro: 'Explore My Work',
+      portfolioDescription: 'Here you can browse a collection of my work across various graphic design specializations.',
+      all: 'All',
+      contactTitle: 'Get in Touch',
+      contactDescription: 'I\'d love to hear about your inquiries and new projects. Feel free to reach out to me through the following:',
+      email: 'Email',
+      phone: 'Phone',
+      message: 'Message',
+      sendMessage: 'Send Message',
+      legalTitle: 'Legal Information & Terms', // Default, will be overridden by CMS
+      legalContent: ``, // Default, will be overridden by CMS
+      copyright: 'All rights reserved.',
+      yourName: 'Your Name',
+      yourEmail: 'Your Email',
+      socialMedia: 'My Social Media',
+      viewProject: 'View Project',
+      additionalImages: 'Additional Images',
+      visitProject: 'Visit Project',
+      projectNotFound: 'Project not found',
+      projectNotFoundDesc: 'Sorry, details for this project could not be found.',
+      contactUsButton: 'Contact Us', // New translation for footer button
+      prev: 'Prev', // Pagination
+      next: 'Next', // Pagination
+    },
+  };
+
   // Initialize state from localStorage or browser preferences
   const [currentPage, setCurrentPage] = useState(() => {
     const savedPage = localStorage.getItem('currentPage');
@@ -582,7 +658,7 @@ function App() {
   // Update document title and meta description dynamically
   useEffect(() => {
     const pageTitle = language === 'ar' ? globalSettings.page_title_ar : globalSettings.page_title_en;
-    const metaDescription = language === 'ar' ? globalSettings.meta_description_ar : globalSettings.meta_description_en;
+    const metaDescription = language === 'ar' ? globalSettings.meta_description_ar : globalSettings.description_en; // Corrected: meta_description_en
     const favicon = globalSettings.favicon;
 
     if (pageTitle) {
