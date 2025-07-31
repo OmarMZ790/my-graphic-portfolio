@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Globe, Mail, Phone, Eye, MessageSquare, Menu, X as CloseIcon, ChevronLeft, ChevronRight, PenTool, Palette, Lightbulb, Facebook, Linkedin } from 'lucide-react';
+// Import all specific Lucide icons that are used by name in the data or directly in components
+import { Globe, Mail, Phone, Eye, MessageSquare, Menu, X as CloseIcon, ChevronLeft, ChevronRight, PenTool, Palette, Lightbulb, Facebook, Linkedin, Layout } from 'lucide-react';
 
 // --- Static Data (Embedded from your JSON files) ---
 // This approach embeds your data directly into the React app,
@@ -195,10 +196,16 @@ const portfolioProjectsData = {
   ]
 };
 
+// --- Map of Lucide icon components by their string names ---
+// This allows dynamic lookup of icon components based on names from your data.
+const iconComponentsMap = {
+  Globe, Mail, Phone, Eye, MessageSquare, Menu, X: CloseIcon, ChevronLeft, ChevronRight, PenTool, Palette, Lightbulb, Facebook, Linkedin, Layout
+  // Add any other Lucide icons you might use by their PascalCase name here
+};
+
 // --- Helper function to get Lucide icon component by name ---
 const getLucideIcon = (iconName) => {
-  // Lucide icons are imported directly, so we can reference them by name
-  const IconComponent = LucideIcons[iconName];
+  const IconComponent = iconComponentsMap[iconName];
   return IconComponent ? <IconComponent size={24} /> : null;
 };
 
