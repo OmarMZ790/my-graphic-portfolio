@@ -3,9 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>لوحة التحكم</title>
-  <!-- Netlify CMS (Decap CMS) script -->
+  <title>لوحة تحكم معرض أعمال عمر</title>
+  <!-- Decap CMS (formerly Netlify CMS) script -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <!-- Netlify Identity Widget script -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
   <!-- This is where the CMS will be loaded -->
@@ -14,6 +16,11 @@
     if (window.netlifyIdentity) {
       window.netlifyIdentity.on("init", user => {
         if (!user) {
+          // If no user is logged in, and there's an invite token, open the identity modal
+          const params = new URLSearchParams(window.location.hash.substring(1));
+          if (params.has('invite_token')) {
+            window.netlifyIdentity.open();
+          }
           window.netlifyIdentity.on("login", () => {
             document.location.href = "/admin/";
           });
