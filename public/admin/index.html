@@ -12,19 +12,16 @@
 <body>
   <!-- This is where the CMS will be loaded -->
   <script>
-    // Initialize Netlify Identity for CMS
+    // Ensure Netlify Identity widget is loaded before trying to use it
     if (window.netlifyIdentity) {
-      window.netlifyIdentity.on("init", user => {
-        if (!user) {
-          // If no user is logged in, and there's an invite token, open the identity modal
-          const params = new URLSearchParams(window.location.hash.substring(1));
-          if (params.has('invite_token')) {
-            window.netlifyIdentity.open();
-          }
-          window.netlifyIdentity.on("login", () => {
-            document.location.href = "/admin/";
-          });
-        }
+      // Explicitly initialize the widget. This is crucial for it to process invite tokens.
+      window.netlifyIdentity.init(); 
+
+      // Listen for login event to redirect to admin.
+      // The widget should automatically open the modal if an invite_token is present in the URL hash
+      // after init() is called.
+      window.netlifyIdentity.on("login", () => {
+        document.location.href = "/admin/";
       });
     }
   </script>
