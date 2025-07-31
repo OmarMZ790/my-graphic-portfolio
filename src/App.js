@@ -2,208 +2,13 @@ import React, { useState, useEffect } from 'react';
 // Import all specific Lucide icons that are used by name in the data or directly in components
 import { Globe, Mail, Phone, Eye, MessageSquare, Menu, X as CloseIcon, ChevronLeft, ChevronRight, PenTool, Palette, Lightbulb, Facebook, Linkedin, Layout } from 'lucide-react';
 
-// --- Static Data (Embedded from your JSON files) ---
-// This approach embeds your data directly into the React app,
-// simplifying deployment by removing external fetch calls for JSON files.
-
-const translations = {
-  ar: {
-    home: 'الرئيسية',
-    portfolio: 'معرض الأعمال',
-    contact: 'اتصل بنا',
-    legal: 'معلومات قانونية',
-    aboutMe: 'من أنا',
-    greeting: 'مرحباً، أنا',
-    name: 'مصمم جرافيك', // Default, will be overridden by CMS
-    tagline: 'أحول الأفكار إلى تصاميم بصرية مذهلة.', // Default, will be overridden by CMS
-    heroDescription: 'بصفتي مصمم جرافيك شغوف ومبدع، أمتلك خبرة واسعة في تحويل الأفكار المعقدة إلى حلول بصرية جذابة ومؤثرة. أؤمن بأن التصميم الجيد هو مفتاح التواصل الفعال وبناء الهوية البصرية القوية للعلامات التجارية.', // Default, will be overridden by CMS
-    heroSkillsTitle: 'ماذا أقدم؟',
-    callToAction: 'تصفح معرض أعمالي',
-    portfolioIntro: 'استكشف أعمالي',
-    portfolioDescription: 'هنا يمكنك استعراض مجموعة من أعمالي في مختلف تخصصات التصميم الجرافيكي.',
-    all: 'الكل',
-    contactTitle: 'تواصل معي',
-    contactDescription: 'يسعدني تلقي استفساراتكم ومشاريعكم الجديدة. لا تترددوا في التواصل معي عبر الطرق التالية:',
-    email: 'البريد الإلكتروني',
-    phone: 'رقم الهاتف',
-    message: 'الرسالة',
-    sendMessage: 'إرسال الرسالة',
-    legalTitle: 'المعلومات القانونية والشروط', // Default, will be overridden by CMS
-    legalContent: ``, // Default, will be overridden by CMS
-    copyright: 'جميع الحقوق محفوظة.',
-    yourName: 'اسمك',
-    yourEmail: 'بريدك الإلكتروني',
-    socialMedia: 'صفحاتي على الإنترنت',
-    viewProject: 'عرض المشروع',
-    additionalImages: 'صور إضافية',
-    visitProject: 'زيارة المشروع',
-    projectNotFound: 'المشروع غير موجود',
-    projectNotFoundDesc: 'عذراً، لا يمكن العثور على تفاصيل هذا المشروع.',
-    contactUsButton: 'اتصل بنا', // New translation for footer button
-    prev: 'السابق', // Pagination
-    next: 'التالي', // Pagination
-  },
-  en: {
-    home: 'Home',
-    portfolio: 'Portfolio',
-    contact: 'Contact',
-    legal: 'Legal Info', // Default, will be overridden by CMS
-    aboutMe: 'About Me',
-    greeting: 'Hello, I\'m',
-    name: 'A Graphic Designer', // Default, will be overridden by CMS
-    tagline: 'Transforming ideas into stunning visual designs.', // Default, will be overridden by CMS
-    heroDescription: 'As a passionate and creative graphic designer, I have extensive experience in transforming complex ideas into attractive and impactful visual solutions. I believe that good design is key to effective communication and building a strong visual identity for brands.', // Default, will be overridden by CMS
-    heroSkillsTitle: 'What I Offer?',
-    callToAction: 'Browse My Portfolio',
-    portfolioIntro: 'Explore My Work',
-    portfolioDescription: 'Here you can browse a collection of my work across various graphic design specializations.',
-    all: 'All',
-    contactTitle: 'Get in Touch',
-    contactDescription: 'I\'d love to hear about your inquiries and new projects. Feel free to reach out to me through the following:',
-    email: 'Email',
-    phone: 'Phone',
-    message: 'Message',
-    sendMessage: 'Send Message',
-    legalTitle: 'Legal Information & Terms', // Default, will be overridden by CMS
-    legalContent: ``, // Default, will be overridden by CMS
-    copyright: 'All rights reserved.',
-    yourName: 'Your Name',
-    yourEmail: 'Your Email',
-    socialMedia: 'My Social Media',
-    viewProject: 'View Project',
-    additionalImages: 'Additional Images',
-    visitProject: 'Visit Project',
-    projectNotFound: 'Project not found',
-    projectNotFoundDesc: 'Sorry, details for this project could not be found.',
-    contactUsButton: 'Contact Us', // New translation for footer button
-    prev: 'Prev', // Pagination
-    next: 'Next', // Pagination
-  },
-};
-
-const globalSettingsData = {
-  "page_title_en": "Your Portfolio Title (English)",
-  "tagline_ar": "أحول الأفكار إلى تصاميم بصرية مذهلة.",
-  "profile_image": "/images/drawing-122.svg", // Ensure this path is correct in your public/images folder
-  "meta_description_en": "Professional graphic designer specializing in logo design, branding, print design, and advertising. Transforming ideas into innovative visual designs.",
-  "social_links": [
-    {
-      "platform_name": "Facebook",
-      "url": "https://facebook.com/yourprofile", // Update your Facebook URL
-      "icon": "Facebook" // Ensure this matches Lucide icon name
-    },
-    {
-      "platform_name": "LinkedIn",
-      "url": "https://linkedin.com/yourprofile", // Update your LinkedIn URL
-      "icon": "Linkedin" // Ensure this matches Lucide icon name
-    }
-  ],
-  "page_title_ar": "معرض أعمال عمر محمد",
-  "designer_name_en": "Omar Mohammed",
-  "meta_description_ar": "مصمم جرافيك محترف متخصص في تصميم الشعارات، الهوية البصرية، تصميم المطبوعات، والإعلانات. أحول الأفكار إلى تصاميم بصرية مبتكرة.",
-  "contact_phone": "+201288151030", // Update your phone number
-  "designer_name_ar": "عمر محمد",
-  "hero_description_en": "As a passionate and creative graphic designer, I have extensive experience in transforming complex ideas into attractive and impactful visual solutions. I believe that good design is key to effective communication and building a strong visual identity for brands.",
-  "favicon": "/images/drawing-122.svg", // Ensure this path is correct in your public/images folder
-  "hero_description_ar": "بصفتي مصمم جرافيك شغوف ومبدع، أمتلك خبرة واسعة في تحويل الأفكار المعقدة إلى حلول بصرية جذابة ومؤثرة. أؤمن بأن التصميم الجيد هو مفتاح التواصل الفعال وبناء الهوية البصرية القوية للعلامات التجارية.",
-  "tagline_en": "Transforming ideas into stunning visual designs.",
-  "contact_email": "Omar.M.Z.Mail@gmail.com" // Update your email
-};
-
-const legalInfoData = {
-  "title_ar": "المعلومات القانونية والشروط",
-  "title_en": "Legal Information & Terms",
-  "content_ar": "<p>هذا النص هو مثال للمعلومات القانونية والشروط. يجب عليك استبداله بالمحتوى الفعلي الخاص بك.</p><p>جميع الحقوق محفوظة &copy; 2024. لا يجوز نسخ أو توزيع أي جزء من هذا الموقع بدون إذن كتابي.</p>",
-  "content_en": "<p>This is example legal information and terms. You should replace it with your actual content.</p><p>All rights reserved &copy; 2024. No part of this website may be reproduced or distributed without written permission.</p>"
-};
-
-const specializationsData = {
-  "specializations": [
-    {
-      "name_ar": "تصميم شعارات إحترافية",
-      "name_en": "Designing Professional Logos",
-      "icon": "PenTool", // Correct Lucide icon name (PascalCase)
-      "category_slug": "logos"
-    },
-    {
-      "name_ar": "تصميم هوية بصرية",
-      "name_en": "Brand Identity Design",
-      "icon": "Palette", // Correct Lucide icon name
-      "category_slug": "branding"
-    },
-    {
-      "name_ar": "تصميم إعلانات ومطبوعات",
-      "name_en": "Advertising & Print Design",
-      "icon": "Lightbulb", // Correct Lucide icon name
-      "category_slug": "advertising"
-    },
-    {
-      "name_ar": "تصميم واجهات المستخدم (UI)",
-      "name_en": "User Interface (UI) Design",
-      "icon": "Layout", // Example icon, you can change it
-      "category_slug": "ui-design"
-    }
-  ]
-};
-
-const portfolioProjectsData = {
-  "projects": [
-    {
-      "id": "project-1", // Added unique ID for better React keying
-      "title_ar": "مشروع تصميم شعار شركة 'القمة'",
-      "title_en": "Summit Company Logo Design Project",
-      "short_description_ar": "تصميم شعار عصري ومبتكر لشركة متخصصة في الحلول التقنية.",
-      "short_description_en": "Modern and innovative logo design for a technology solutions company.",
-      "main_image": "/images/6-4.jpg", // Ensure this path is correct in your public/images folder
-      "additional_images": [
-        { "image": "/images/6-4.jpg" }, // Example, ensure these paths are correct
-        { "image": "https://placehold.co/800x600/FF5733/FFFFFF?text=Additional+Image+2" }
-      ],
-      "category": "logos", // Must match a category_slug from specializations
-      "project_url": "https://example.com/project-summit", // Optional: link to live project
-      "body_ar": "<p>تفاصيل المشروع: قمنا بتصميم شعار يعكس الرؤية المستقبلية للشركة، مع التركيز على البساطة والاحترافية. تم استخدام ألوان زاهية لتعكس الابتكار.</p><p>الهدف من المشروع كان إنشاء هوية بصرية قوية تساعد الشركة على التميز في السوق التنافسي.</p>",
-      "body_en": "<p>Project Details: We designed a modern logo reflecting the company's futuristic vision, focusing on simplicity and professionalism. Vibrant colors were used to convey innovation.</p><p>The project's goal was to create a strong visual identity that helps the company stand out in a competitive market.</p>"
-    },
-    {
-      "id": "project-2",
-      "title_ar": "حملة إعلانية لمنتج جديد",
-      "title_en": "New Product Advertising Campaign",
-      "short_description_ar": "تصميم حملة إعلانية متكاملة تشمل ملصقات وإعلانات سوشيال ميديا لمنتج غذائي جديد.",
-      "short_description_en": "Designing a comprehensive advertising campaign including posters and social media ads for a new food product.",
-      "main_image": "https://placehold.co/600x400/3498DB/FFFFFF?text=Ad+Campaign",
-      "additional_images": [],
-      "category": "advertising",
-      "project_url": null,
-      "body_ar": "<p>تفاصيل الحملة: ركزنا على جذب الانتباه من خلال تصميمات جريئة ورسائل واضحة. تم توزيع الإعلانات عبر منصات متعددة لتحقيق أقصى وصول.</p>",
-      "body_en": "<p>Campaign Details: We focused on capturing attention with bold designs and clear messages. Ads were distributed across multiple platforms for maximum reach.</p>"
-    },
-    {
-      "id": "project-3",
-      "title_ar": "تصميم هوية بصرية لمقهى 'الركن الهادئ'",
-      "title_en": "Brand Identity for 'The Quiet Corner' Cafe",
-      "short_description_ar": "تطوير هوية بصرية متكاملة لمقهى جديد، تشمل الشعار، الألوان، الخطوط، وتصميم القوائم.",
-      "short_description_en": "Developing a complete brand identity for a new cafe, including logo, colors, fonts, and menu design.",
-      "main_image": "https://placehold.co/600x400/9B59B6/FFFFFF?text=Cafe+Branding",
-      "additional_images": [
-        { "image": "https://placehold.co/800x600/9B59B6/FFFFFF?text=Cafe+Mockup+1" },
-        { "image": "https://placehold.co/800x600/9B59B6/FFFFFF?text=Cafe+Mockup+2" }
-      ],
-      "category": "branding",
-      "project_url": null,
-      "body_ar": "<p>تفاصيل المشروع: تم تصميم هوية تعكس الأجواء الهادئة والمريحة للمقهى، مع التركيز على الألوان الترابية والخطوط الأنيقة.</p>",
-      "body_en": "<p>Project Details: The identity was designed to reflect the quiet and comfortable ambiance of the cafe, focusing on earthy tones and elegant typography.</p>"
-    }
-  ]
-};
-
-// --- Map of Lucide icon components by their string names ---
+// --- Helper function to get Lucide icon component by name ---
 // This allows dynamic lookup of icon components based on names from your data.
 const iconComponentsMap = {
   Globe, Mail, Phone, Eye, MessageSquare, Menu, X: CloseIcon, ChevronLeft, ChevronRight, PenTool, Palette, Lightbulb, Facebook, Linkedin, Layout
   // Add any other Lucide icons you might use by their PascalCase name here
 };
 
-// --- Helper function to get Lucide icon component by name ---
 const getLucideIcon = (iconName) => {
   const IconComponent = iconComponentsMap[iconName];
   return IconComponent ? <IconComponent size={24} /> : null;
@@ -746,24 +551,13 @@ function App() {
   });
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  // Directly use the embedded data
-  const globalSettings = globalSettingsData;
-  const portfolioProjects = portfolioProjectsData.projects.map(project => ({
-    ...project,
-    // Ensure slug is generated correctly based on the current language
-    slug: (language === 'ar' ? project.title_ar : project.title_en)
-      .toLowerCase()
-      .replace(/ /g, '-')
-      .replace(/[^\w-]+/g, ''),
-    id: project.id || Math.random().toString(36).substring(2, 9) // Ensure unique ID
-  }));
-  const specializations = specializationsData.specializations;
-  const legalInfo = legalInfoData;
-
+  const [globalSettings, setGlobalSettings] = useState({});
+  const [portfolioProjects, setPortfolioProjects] = useState([]);
+  const [specializations, setSpecializations] = useState([]);
+  const [legalInfo, setLegalInfo] = useState({});
   const [selectedProjectSlug, setSelectedProjectSlug] = useState(null);
-  const [loading, setLoading] = useState(false); // No longer loading from external files
-  const [error, setError] = useState(null); // No longer fetching, so no fetch errors
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Force dark mode
   useEffect(() => {
@@ -814,6 +608,57 @@ function App() {
     }
   }, [globalSettings, language]);
 
+  // Fetch data from CMS-generated JSON files
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // Fetch global settings
+        const globalResponse = await fetch('/data/global.json');
+        const globalData = await globalResponse.json();
+        setGlobalSettings(globalData);
+
+        // Fetch legal info
+        const legalResponse = await fetch('/data/legal.json');
+        const legalData = await legalResponse.json();
+        setLegalInfo(legalData);
+
+        // Fetch specializations
+        const specializationsResponse = await fetch('/data/specializations.json');
+        const specializationsData = await specializationsResponse.json();
+        setSpecializations(specializationsData.specializations || []);
+
+        // Fetch portfolio projects
+        const portfolioResponse = await fetch('/data/portfolio.json');
+        const portfolioData = await portfolioResponse.json();
+        // Add a slug to each project for routing and ensure unique ID
+        const projectsWithSlugs = (portfolioData.projects || []).map(project => ({
+          ...project,
+          slug: (language === 'ar' ? project.title_ar : project.title_en)
+            .toLowerCase()
+            .replace(/ /g, '-')
+            .replace(/[^\w-]+/g, ''), // Basic slug generation
+          id: project.id || Math.random().toString(36).substring(2, 9) // Ensure unique ID
+        }));
+        setPortfolioProjects(projectsWithSlugs);
+
+      } catch (e) {
+        console.error("Failed to fetch CMS data:", e);
+        setError("Failed to load content. Please try again later.");
+        // Fallback to default translations if data fetching fails
+        setGlobalSettings({});
+        setLegalInfo({});
+        setSpecializations([]);
+        setPortfolioProjects([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [language]); // Re-fetch if language changes (for slug generation based on title)
+
   // Scroll to top when currentPage or selectedProjectSlug changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -823,7 +668,6 @@ function App() {
 
   // Render content based on currentPage
   const renderPage = () => {
-    // Loading and error states are simplified as data is embedded
     if (loading) {
       return (
         <div className="flex justify-center items-center h-screen-minus-header">
